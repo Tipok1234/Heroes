@@ -15,4 +15,4 @@ MonoBehaviour:
   _attackPoints: 5
   _defencePoints: 7
   _cardName: Feduk
-  _cardMainSprite: {fileID: 10915, guid: 0000000000000000f000000000000000, type: 0}
+  _cardMainSprite: {fileID: 21300000, guid: 87f7e79dbfe6a8849b5f278a31686296, type: 3}

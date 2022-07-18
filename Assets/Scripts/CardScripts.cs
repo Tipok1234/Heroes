@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using Assets.Scripts.SO;
 
 public class CardScripts : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
@@ -9,19 +10,26 @@ public class CardScripts : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
     private Vector3 _offset;
     public Transform _defaultParent, _defaultTempCardParent;
     private GameObject _tempCardGo;
+    private GameManagerScript _gameManager;
+    private bool isDraggable;
     private void Awake()
     {
         _mainCamera = Camera.allCameras[0];
         _tempCardGo = GameObject.Find("TempCardGo");
+        _gameManager = FindObjectOfType<GameManagerScript>();
     }
     public void OnBeginDrag(PointerEventData eventData)
     {
         _offset = transform.position - _mainCamera.ScreenToWorldPoint(eventData.position);
 
-
         _defaultTempCardParent = transform.parent;
-
         _defaultParent = _defaultTempCardParent;
+
+        isDraggable = _defaultParent.GetComponent<DropPlaceScript>().Type == FieldType.SELF_HAND &&
+                      _gameManager.IsPlayerTurn;
+
+        if (!isDraggable)
+            return;
 
         _tempCardGo.transform.SetParent(_defaultParent);
         _tempCardGo.transform.SetSiblingIndex(transform.GetSiblingIndex());
@@ -32,6 +40,9 @@ public class CardScripts : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
 
     public void OnDrag(PointerEventData eventData)
     {
+        if (!isDraggable)
+            return;
+
         Vector3 newPos = _mainCamera.ScreenToWorldPoint(eventData.position);
         transform.position = newPos + _offset;
 
@@ -43,6 +54,9 @@ public class CardScripts : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
 
     public void OnEndDrag(PointerEventData eventData)
     {
+        if (!isDraggable)
+            return;
+
         transform.SetParent(_defaultParent);
         GetComponent<CanvasGroup>().blocksRaycasts = true;
 
@@ -53,6 +67,9 @@ public class CardScripts : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
 
     private void CheckPosition()
     {
+        if (!isDraggable)
+            return;
+
         int newIndex = _defaultTempCardParent.childCount;
 
         for (int i = 0; i < _defaultTempCardParent.childCount; i++)
