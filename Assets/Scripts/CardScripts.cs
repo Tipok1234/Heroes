@@ -1,8 +1,7 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using Assets.Scripts.SO;
+using Assets.Scripts.Managers;
+using static Assets.Scripts.Enums.FieldTypeEnum;
 
 public class CardScripts : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
@@ -10,13 +9,13 @@ public class CardScripts : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
     private Vector3 _offset;
     public Transform _defaultParent, _defaultTempCardParent;
     private GameObject _tempCardGo;
-    private GameManagerScript _gameManager;
+    private GameManager _gameManager;
     private bool isDraggable;
     private void Awake()
     {
         _mainCamera = Camera.allCameras[0];
         _tempCardGo = GameObject.Find("TempCardGo");
-        _gameManager = FindObjectOfType<GameManagerScript>();
+        _gameManager = FindObjectOfType<GameManager>();
     }
     public void OnBeginDrag(PointerEventData eventData)
     {
@@ -25,7 +24,8 @@ public class CardScripts : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
         _defaultTempCardParent = transform.parent;
         _defaultParent = _defaultTempCardParent;
 
-        isDraggable = _defaultParent.GetComponent<DropPlaceScript>().Type == FieldType.SELF_HAND &&
+        isDraggable = (_defaultParent.GetComponent<DropPlaceScript>().Type == FieldType.SELF_HAND ||
+            _defaultParent.GetComponent<DropPlaceScript>().Type == FieldType.SELF_FIELD) &&
                       _gameManager.IsPlayerTurn;
 
         if (!isDraggable)

@@ -26,7 +26,7 @@ namespace Assets.Scripts.Managers
 
         public CardDataSO GetRandomCard()
         {
-            return AllCards[Random.Range(0, AllCards.Count)];
+            return AllCards[Random.Range(0, _allCards.Count)];
         }
 
     }
