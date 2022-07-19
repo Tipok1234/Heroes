@@ -5,10 +5,11 @@ using Assets.Scripts.Models;
 using UnityEngine.UI;
 using TMPro;
 using Assets.Scripts.SO;
-using static Assets.Scripts.Enums.FieldTypeEnum;
+using Assets.Scripts.Enums;
 
 namespace Assets.Scripts.Managers
 {
+
     public class GameManager : MonoBehaviour
     {
         public bool IsPlayerTurn
@@ -38,8 +39,11 @@ namespace Assets.Scripts.Managers
 
         private List<CardDataSO> _enemyDeck, _playerDeck;
 
-        private void Start()
+        private void Awake()
         {
+            AttackCard.CardFigthAction += OnCardFigthAction;
+
+
             turn = 0;
 
 
@@ -53,6 +57,10 @@ namespace Assets.Scripts.Managers
             StartCoroutine(TurnFunc());
         }
 
+        private void OnCardFigthAction(BattleCard playerCard, BattleCard enemyCard)
+        {
+            CardsFight(playerCard,enemyCard);
+        }
 
         private List<CardDataSO> GiveDeckCard()
         {
@@ -102,7 +110,7 @@ namespace Assets.Scripts.Managers
 
             foreach (var card in _playerFieldCards)
             {
-                card.DeHighLightCard();
+                card.EnableCardLight(false);
             }
 
             if (IsPlayerTurn)
@@ -110,7 +118,7 @@ namespace Assets.Scripts.Managers
                 foreach (var card in _playerFieldCards)
                 {
                     card.ChangeAttackState(true);
-                    card.HighLightCard();
+                    card.EnableCardLight(true);
                 }
                     
 
@@ -150,13 +158,22 @@ namespace Assets.Scripts.Managers
 
                 cards[0].EnableCardBack(false);
                 cards[0].transform.SetParent(_enemyField);
+                cards[0].SetFieldType(FieldType.ENEMY_FIELD);
 
                 _enemyFieldCards.Add(cards[0]);
                 _enemyHandCards.Remove(cards[0]);
+
+
+                //if (cards.Count == 0)
+                //{
+                //    Debug.LogError("Cards ENDED IN HAND!");
+                //    return;
+                //}
             }
         }
         private void GiveNewCards()
-        {
+        {              
+
             GiveCardToHand(_enemyDeck ,_enemyHand);
             GiveCardToHand(_playerDeck, _playerHand);
         }
@@ -189,6 +206,36 @@ namespace Assets.Scripts.Managers
 
             if (fieldType == FieldType.ENEMY_HAND)
                 _enemyHandCards.Remove(card);
+        }
+
+        private void CardsFight(BattleCard playerCard, BattleCard enemyCard)
+        {          
+            enemyCard.GetDamage(playerCard.AttackPoints);
+            playerCard.GetDamage(enemyCard.AttackPoints);
+
+            if (!playerCard.IsAlive)
+                DestroyCard(playerCard);
+            else
+                playerCard.RefreshData();
+
+
+            if (!enemyCard.IsAlive)
+                DestroyCard(enemyCard);
+            else
+                enemyCard.RefreshData();
+        }
+
+        private void DestroyCard(BattleCard card)
+        {
+            card.GetComponent<CardScripts>().OnEndDrag(null);
+
+            if (_enemyFieldCards.Exists(x => x == card))
+                _enemyFieldCards.Remove(card);
+
+            if (_playerFieldCards.Exists(x => x == card))
+                _playerFieldCards.Remove(card);
+
+            Destroy(card.gameObject);
         }
     }
 }

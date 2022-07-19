@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 using Assets.Scripts.Managers;
-using static Assets.Scripts.Enums.FieldTypeEnum;
+using Assets.Scripts.Enums;
 
 public class CardScripts : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
@@ -49,6 +49,7 @@ public class CardScripts : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
         if (_tempCardGo.transform.parent != _defaultTempCardParent)
             _tempCardGo.transform.SetParent(_defaultTempCardParent);
 
+        if(_defaultParent.GetComponent<DropPlaceScript>().Type != FieldType.SELF_FIELD)
         CheckPosition();
     }
 

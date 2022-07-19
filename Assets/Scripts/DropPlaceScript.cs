@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using Assets.Scripts.Models;
 using Assets.Scripts.Managers;
-using static Assets.Scripts.Enums.FieldTypeEnum;
+using Assets.Scripts.Enums;
 
 public class DropPlaceScript : MonoBehaviour, IDropHandler, IPointerEnterHandler, IPointerExitHandler
 {
