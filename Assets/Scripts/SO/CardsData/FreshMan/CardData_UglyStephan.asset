@@ -10,9 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4d53352b2fbc1ef4ab63d678623bd4f7, type: 3}
-  m_Name: CardData_KISH
+  m_Name: CardData_UglyStephan
   m_EditorClassIdentifier: 
-  _attackPoints: 4
-  _defencePoints: 4
-  _cardName: KISH
-  _cardMainSprite: {fileID: 21300000, guid: 44b507744bd5f49499449b7d2498e398, type: 3}
+  _attackPoints: 3
+  _defencePoints: 3
+  _manaCostPoints: 2
+  _cardName: UglyStephan
+  _cardMainSprite: {fileID: 21300000, guid: 9f7a8efa080c45e48a72f52547c03708, type: 3}

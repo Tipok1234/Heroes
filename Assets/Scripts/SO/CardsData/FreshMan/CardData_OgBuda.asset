@@ -10,9 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4d53352b2fbc1ef4ab63d678623bd4f7, type: 3}
-  m_Name: CardData_Morgenshtern
+  m_Name: CardData_OgBuda
   m_EditorClassIdentifier: 
-  _attackPoints: 5
-  _defencePoints: 5
-  _cardName: Morgenshtern
-  _cardMainSprite: {fileID: 21300000, guid: 8ecb4b935c841e64cad4bb4b41591199, type: 3}
+  _attackPoints: 6
+  _defencePoints: 4
+  _manaCostPoints: 6
+  _cardName: OgBuda
+  _cardMainSprite: {fileID: 21300000, guid: cbbc45acb8e455b468c248c2104eddc2, type: 3}

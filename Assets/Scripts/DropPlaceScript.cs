@@ -16,13 +16,18 @@ public class DropPlaceScript : MonoBehaviour, IDropHandler, IPointerEnterHandler
             return;
 
         CardScripts card = eventData.pointerDrag.GetComponent<CardScripts>();
+        BattleCard battleCard = card.GetComponent<BattleCard>();
 
-        if (card && _gameManager.PlayerFieldCardsCount < 6)
+        if (card && _gameManager.PlayerFieldCardsCount < 6 && _gameManager.IsPlayerTurn 
+            && _gameManager.PlayerMana >= battleCard.ManaCostPoints)
         {
-            _gameManager.RemoveHandCard(FieldType.SELF_HAND, card.GetComponent<BattleCard>());
-            _gameManager.AddCardInField(FieldType.SELF_FIELD, card.GetComponent<BattleCard>());
+            _gameManager.RemoveHandCard(FieldType.SELF_HAND, battleCard);
+            _gameManager.AddCardInField(FieldType.SELF_FIELD, battleCard);
             
             card._defaultParent = transform;
+
+            _gameManager.ReduceMana(true, battleCard.ManaCostPoints);
+
         }
         
     }
