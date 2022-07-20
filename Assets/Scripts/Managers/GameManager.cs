@@ -38,6 +38,8 @@ namespace Assets.Scripts.Managers
         [SerializeField] private TMP_Text _resultWinnerText;
 
         [SerializeField] private Button _endTurnButton;
+        [SerializeField] private AttackHero _enemyHero;
+        [SerializeField] private AttackHero _playerHero;
 
         private List<BattleCard> _playerHandCards = new List<BattleCard>(),
                                  _playerFieldCards = new List<BattleCard>(),
@@ -55,13 +57,42 @@ namespace Assets.Scripts.Managers
 
         private void Awake()
         {
+            StartGame();
+        }
+
+        public void RestartGame()
+        {
+            StopAllCoroutines();
+
+            foreach (var card in _playerHandCards)
+                Destroy(card.gameObject);
+            foreach (var card in _playerFieldCards)
+                Destroy(card.gameObject);
+            foreach (var card in _enemyHandCards)
+                Destroy(card.gameObject);
+            foreach (var card in _enemyFieldCards)
+                Destroy(card.gameObject);
+
+            _playerHandCards.Clear();
+            _playerFieldCards.Clear();
+            _enemyHandCards.Clear();
+            _enemyFieldCards.Clear();
+
+            StartGame();
+        }
+
+        public void StartGame()
+        {
             AttackCard.CardFigthAction += OnCardFigthAction;
 
             turn = 0;
+            _endTurnButton.interactable = true;
 
             _enemyDeck = GiveDeckCard();
             _playerDeck = GiveDeckCard();
 
+            _enemyMana = 10;
+            _playerMana = 10;
             _healtEnemy = 30;
             _healthPlayer = 30;
 
@@ -70,6 +101,8 @@ namespace Assets.Scripts.Managers
 
             ShowMana();
             ShowHealthHero();
+
+            _resultGO.SetActive(false);
 
             StartCoroutine(TurnFunc());
         }
@@ -130,6 +163,8 @@ namespace Assets.Scripts.Managers
                 card.EnableCardLight(false);
             }
 
+            CheckCardForAvaliabtlity();
+
             if (IsPlayerTurn)
             {
                 foreach (var card in _playerFieldCards)
@@ -144,41 +179,42 @@ namespace Assets.Scripts.Managers
                     _turnTimeText.text = turnTime.ToString();
                     yield return new WaitForSeconds(1);
                 }
+
+                ChangeTurn();
             }
             else
             {
                 foreach (var card in _enemyFieldCards)
                     card.ChangeAttackState(true);
 
-                while (turnTime-- > 27)
-                {
-                    _turnTimeText.text = turnTime.ToString();
-                    yield return new WaitForSeconds(1);
-                }
 
-                if (_enemyHandCards.Count > 0)
-                    EnemyTurn(_enemyHandCards);
+               StartCoroutine(EnemyTurn(_enemyHandCards));
             }
-
-            ChangeTurn();
         }
 
-        private void EnemyTurn(List<BattleCard> cards)
+        IEnumerator EnemyTurn(List<BattleCard> cards)
         {
+            yield return new WaitForSeconds(1);
+
             int count = cards.Count == 1 ? 1 :
                 Random.Range(1, cards.Count);
 
             for (int i = 0; i < count; i++)
             {
-                if (_enemyFieldCards.Count > 5 || _enemyMana == 0)
-                    return;
+                if (_enemyFieldCards.Count > 5 || _enemyMana == 0
+                    || _enemyHandCards.Count == 0)
+                    break;
 
                 List<BattleCard> cardList = cards.FindAll(x => _enemyMana >= x.ManaCostPoints);
 
                 if (cardList.Count == 0)
                     break;
 
+                cardList[0].GetComponent<CardScripts>().MoveToField(_enemyField);
+
                 ReduceMana(false, cardList[0].ManaCostPoints);
+
+                yield return new WaitForSeconds(0.5f);
 
                 cardList[0].EnableCardBack(false);
                 cardList[0].transform.SetParent(_enemyField);
@@ -188,24 +224,33 @@ namespace Assets.Scripts.Managers
                 _enemyHandCards.Remove(cardList[0]);
             }
 
+            yield return new WaitForSeconds(1);
+
             foreach (var activeCard in _enemyFieldCards.FindAll(x => x.IsCanAttack))
             {
                 if (Random.Range(0, 2) == 0 && _playerFieldCards.Count > 0)
                 {
                     var enemy = _playerFieldCards[Random.Range(0, _playerFieldCards.Count)];
 
-                    // Debug.LogError(activeCard.name + "("+ activeCard.AttackPoints + ";" + ")" + enemy.name + "(" + enemy.AttackPoints + " )" );
-
                     activeCard.ChangeAttackState(false);
+                    activeCard.GetComponent<CardScripts>().MoveToTarger(enemy.transform);
+                    yield return new WaitForSeconds(0.75f);
+
                     CardsFight(enemy, activeCard);
                 }
                 else
                 {
-                    //Debug.LogError("ATTACK HERO!");
                     activeCard.ChangeAttackState(false);
+
+                    activeCard.GetComponent<CardScripts>().MoveToTarger(_playerHero.transform);
+                    yield return new WaitForSeconds(0.75f);
+
                     DamageHero(activeCard, false);
                 }
+                yield return new WaitForSeconds(0.2f);
             }
+            yield return new WaitForSeconds(1);
+            ChangeTurn();
         }
         private void GiveNewCards()
         {
@@ -326,6 +371,22 @@ namespace Assets.Scripts.Managers
                 else
                     _resultWinnerText.text = "Gucci Mane - WIN!";
             }
+        }
+
+        public void CheckCardForAvaliabtlity()
+        {
+            foreach (var card in _playerHandCards)
+            {
+                card.CheckForAvaliability(_playerMana);
+            }
+        }
+        
+        public void HightLightTarget(bool hightlight)
+        {
+            foreach (var card in _enemyFieldCards)
+                card.HighLightAsTarget(hightlight);
+
+            _enemyHero.HighLightAsTarget(hightlight);
         }
     }
 }

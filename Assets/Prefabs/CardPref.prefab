@@ -134,6 +134,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d4b4bc201283abb4faa6964794d05fff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _cardImage: {fileID: 8652261501158741371}
   _logoImage: {fileID: 2443604952788982499}
   _nameText: {fileID: 2443604951805696259}
   _attackPointsText: {fileID: 2512148597883098386}
@@ -141,7 +142,8 @@ MonoBehaviour:
   _manaCostPointsText: {fileID: 1452327233934107998}
   _hideObj: {fileID: 7775769444980216352}
   _highlitedObj: {fileID: 1278902973459903825}
-  _isCanAttack: 0
+  _normalColor: {r: 1, g: 1, b: 0, a: 1}
+  _targetColor: {r: 0.8584906, g: 0.08503916, b: 0.08503916, a: 1}
 --- !u!114 &1172636253621598574
 MonoBehaviour:
   m_ObjectHideFlags: 0

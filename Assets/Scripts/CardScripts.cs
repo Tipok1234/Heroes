@@ -1,7 +1,11 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
+using DG.Tweening;
 using Assets.Scripts.Managers;
 using Assets.Scripts.Enums;
+using Assets.Scripts.Models;
+using System.Collections;
+using UnityEngine.UI;
 
 public class CardScripts : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
@@ -24,12 +28,19 @@ public class CardScripts : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
         _defaultTempCardParent = transform.parent;
         _defaultParent = _defaultTempCardParent;
 
-        isDraggable = (_defaultParent.GetComponent<DropPlaceScript>().Type == FieldType.SELF_HAND ||
-            _defaultParent.GetComponent<DropPlaceScript>().Type == FieldType.SELF_FIELD) &&
-                      _gameManager.IsPlayerTurn;
+        isDraggable = _gameManager.IsPlayerTurn &&
+            (
+            (_defaultParent.GetComponent<DropPlaceScript>().Type == FieldType.SELF_HAND && 
+            _gameManager.PlayerMana >= GetComponent<BattleCard>().ManaCostPoints) ||
+            (_defaultParent.GetComponent<DropPlaceScript>().Type == FieldType.SELF_FIELD &&
+            GetComponent<BattleCard>().IsCanAttack)
+            );
 
         if (!isDraggable)
             return;
+
+        if (GetComponent<BattleCard>().IsCanAttack)
+            _gameManager.HightLightTarget(true);
 
         _tempCardGo.transform.SetParent(_defaultParent);
         _tempCardGo.transform.SetSiblingIndex(transform.GetSiblingIndex());
@@ -42,6 +53,9 @@ public class CardScripts : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
     {
         if (!isDraggable)
             return;
+
+       
+
 
         Vector3 newPos = _mainCamera.ScreenToWorldPoint(eventData.position);
         transform.position = newPos + _offset;
@@ -57,6 +71,8 @@ public class CardScripts : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
     {
         if (!isDraggable)
             return;
+
+        _gameManager.HightLightTarget(false);
 
         transform.SetParent(_defaultParent);
         GetComponent<CanvasGroup>().blocksRaycasts = true;
@@ -85,5 +101,41 @@ public class CardScripts : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
             }
         }
         _tempCardGo.transform.SetSiblingIndex(newIndex);
+    }
+
+    public void MoveToField(Transform field)
+    {
+        transform.SetParent(GameObject.Find("Canvas").transform);
+        transform.DOMove(field.position, 0.5f);
+    }
+
+    public void MoveToTarger(Transform target)
+    {
+        StartCoroutine(MoveToTargetCor(target));
+    }
+
+    IEnumerator MoveToTargetCor(Transform target)
+    {
+        Vector3 pos = transform.position;
+        Transform parent = transform.parent;
+
+        int index = transform.GetSiblingIndex();
+
+        transform.parent.GetComponent<HorizontalLayoutGroup>().enabled = false;
+
+        transform.SetParent(GameObject.Find("Canvas").transform);
+
+        transform.DOMove(target.position, 0.25f);
+
+        yield return new WaitForSeconds(0.25f);
+
+        transform.DOMove(pos, 0.25f);
+
+        yield return new WaitForSeconds(0.25f);
+
+        transform.SetParent(parent);
+        transform.SetSiblingIndex(index);
+
+        transform.parent.GetComponent<HorizontalLayoutGroup>().enabled = true;
     }
 }

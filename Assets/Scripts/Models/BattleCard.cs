@@ -12,10 +12,15 @@ namespace Assets.Scripts.Models
         public int AttackPoints => _currentAttackPoints;
         public bool IsAlive => _currentDefencePoints > 0;
         public bool IsCanAttack => _isCanAttack;
+        public bool IsPlaced => _isPlaced;
+
+        public Color NormalColor => _normalColor;
+        public Color TargetColor => _targetColor;
         public FieldType FieldType => _fieldType;
 
 
         [Header("UI")]
+        [SerializeField] private Image _cardImage;
         [SerializeField] private Image _logoImage;
         [SerializeField] private TMP_Text _nameText;
         [SerializeField] private TMP_Text _attackPointsText;
@@ -25,15 +30,18 @@ namespace Assets.Scripts.Models
         [SerializeField] private GameObject _highlitedObj;
 
         //[SerializeField] private bool _isPlayer;
-
+        [SerializeField] private Color _normalColor;
+        [SerializeField] private Color _targetColor;
         private CardDataSO _cardDataSO;
         private FieldType _fieldType;
 
         private bool _isCanAttack;
+        private bool _isPlaced;
 
         private int _currentDefencePoints;
         private int _currentAttackPoints;
         private int _currentManaCostPoints;
+        
 
 
         public void SetupBattleCard(CardDataSO cardDataSO)
@@ -41,6 +49,7 @@ namespace Assets.Scripts.Models
             _cardDataSO = cardDataSO;
             _logoImage.sprite = _cardDataSO.CardMainSprite;
             _nameText.text = _cardDataSO.CardName;
+
 
             _currentDefencePoints = _cardDataSO.DefencePoints;
             _currentAttackPoints = _cardDataSO.AttackPoints;
@@ -53,6 +62,10 @@ namespace Assets.Scripts.Models
             _fieldType = type;
         }
 
+        public void GetPlaced(bool placed)
+        {
+            _isPlaced = placed;
+        }
         public void ChangeAttackState(bool can)
         {   
             _isCanAttack = can;
@@ -80,6 +93,18 @@ namespace Assets.Scripts.Models
         public void EnableCardLight(bool isEnable)
         {
             _highlitedObj.SetActive(isEnable);
+        }
+
+        public void CheckForAvaliability(int currentMana)
+        {
+            GetComponent<CanvasGroup>().alpha = currentMana >= ManaCostPoints ?
+                1 :
+                .5f;
+        }
+
+        public void HighLightAsTarget(bool hightlight)
+        {
+            _cardImage.color = hightlight ? _targetColor : _normalColor;
         }
     }
 }
