@@ -15,5 +15,6 @@ MonoBehaviour:
   _attackPoints: 3
   _defencePoints: 6
   _manaCostPoints: 4
+  _cardAbility: 6
   _cardName: Mayot
   _cardMainSprite: {fileID: 21300000, guid: 9a2fc97361cd99a4585c9508b3d78bfc, type: 3}

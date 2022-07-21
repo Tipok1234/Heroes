@@ -15,5 +15,6 @@ MonoBehaviour:
   _attackPoints: 2
   _defencePoints: 8
   _manaCostPoints: 3
+  _cardAbility: 4
   _cardName: FrameTamer
   _cardMainSprite: {fileID: 21300000, guid: b33ffe2c025a67546a136f20ab4269ae, type: 3}

@@ -22,15 +22,11 @@ public class DropPlaceScript : MonoBehaviour, IDropHandler, IPointerEnterHandler
             && _gameManager.PlayerMana >= battleCard.ManaCostPoints
             && !battleCard.IsPlaced)
         {
-            _gameManager.RemoveHandCard(FieldType.SELF_HAND, battleCard);
-            _gameManager.AddCardInField(FieldType.SELF_FIELD, battleCard);
-            
-            
-            card._defaultParent = transform;
-            battleCard.GetPlaced(true);
 
-            _gameManager.ReduceMana(true, battleCard.ManaCostPoints);
-            _gameManager.CheckCardForAvaliabtlity();
+            battleCard.OnCast();
+
+
+            card._defaultParent = transform;
 
         }
         

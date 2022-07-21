@@ -15,5 +15,6 @@ MonoBehaviour:
   _attackPoints: 6
   _defencePoints: 4
   _manaCostPoints: 6
+  _cardAbility: 5
   _cardName: OgBuda
   _cardMainSprite: {fileID: 21300000, guid: cbbc45acb8e455b468c248c2104eddc2, type: 3}

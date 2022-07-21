@@ -15,5 +15,6 @@ MonoBehaviour:
   _attackPoints: 1
   _defencePoints: 1
   _manaCostPoints: 1
+  _cardAbility: 3
   _cardName: OFFMI
   _cardMainSprite: {fileID: 21300000, guid: 5f54aa4f7fc1cb340b368d2b52d5c3f8, type: 3}

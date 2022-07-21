@@ -1,6 +1,7 @@
 using Assets.Scripts.Models;
 using Assets.Scripts.SO;
 using System.Collections.Generic;
+using Assets.Scripts.Enums;
 using UnityEngine;
 
 namespace Assets.Scripts.Managers
@@ -13,16 +14,6 @@ namespace Assets.Scripts.Managers
 
 
         [SerializeField] private List<BattleCard> _battleCard;
-
-
-        private void Awake()
-        {
-            for(int i = 0; i <_battleCard.Count; i++)
-            {
-                _battleCard[i].SetupBattleCard(_allCards[i]);
-            }
-        }
-
 
         public CardDataSO GetRandomCard()
         {

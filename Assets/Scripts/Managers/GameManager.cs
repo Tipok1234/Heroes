@@ -15,12 +15,15 @@ namespace Assets.Scripts.Managers
         public int HealthEnemy => _healtEnemy;
         public int PlayerMana => _playerMana;
         public int EnemyMana => _enemyMana;
+        public List<BattleCard> EnemyFieldCards => _enemyFieldCards;
+        
         public bool IsPlayerTurn
         {
             get { return turn % 2 == 0; }
         }
 
         public int PlayerFieldCardsCount => _playerFieldCards.Count;
+
 
         [SerializeField] private CardsManager _cardsManager;
         [SerializeField] private Transform _enemyHand;
@@ -136,18 +139,20 @@ namespace Assets.Scripts.Managers
 
             BattleCard cardGO = Instantiate(_cardPref, hand, false);
 
-            cardGO.SetupBattleCard(card);
+
 
             if (hand == _enemyHand)
             {
                 cardGO.EnableCardBack(true);
                 _enemyHandCards.Add(cardGO);
+                cardGO.SetupBattleCard(card, false);
             }
             else
             {
                 cardGO.EnableCardBack(false);
                 _playerHandCards.Add(cardGO);
                 cardGO.GetComponent<AttackCard>().enabled = false;
+                cardGO.SetupBattleCard(card, true);
             }
 
             deck.RemoveAt(0);
@@ -171,6 +176,7 @@ namespace Assets.Scripts.Managers
                 {
                     card.ChangeAttackState(true);
                     card.EnableCardLight(true);
+                    card.CardAbilities.OnNewTurn();
                 }
 
 
@@ -219,18 +225,25 @@ namespace Assets.Scripts.Managers
                 cardList[0].EnableCardBack(false);
                 cardList[0].transform.SetParent(_enemyField);
                 cardList[0].SetFieldType(FieldType.ENEMY_FIELD);
-
-                _enemyFieldCards.Add(cardList[0]);
-                _enemyHandCards.Remove(cardList[0]);
+                cardList[0].OnCast();
             }
 
             yield return new WaitForSeconds(1);
 
-            foreach (var activeCard in _enemyFieldCards.FindAll(x => x.IsCanAttack))
+            while (_enemyFieldCards.Exists(x => x.IsCanAttack))
             {
-                if (Random.Range(0, 2) == 0 && _playerFieldCards.Count > 0)
+                var activeCard = _enemyFieldCards.FindAll(x => x.IsCanAttack)[0];
+                bool hasProvocation = _playerFieldCards.Exists(x => x.IsProvocation);
+
+                if (hasProvocation || Random.Range(0, 2) == 0 && _playerFieldCards.Count > 0)
                 {
-                    var enemy = _playerFieldCards[Random.Range(0, _playerFieldCards.Count)];
+                    BattleCard enemy;
+                    if (hasProvocation)
+                        enemy = _playerFieldCards.Find(x => x.IsProvocation);
+                    else
+                        enemy = _playerFieldCards[Random.Range(0, _playerFieldCards.Count)];
+
+                    //var enemy = _playerFieldCards[Random.Range(0, _playerFieldCards.Count)];
 
                     activeCard.ChangeAttackState(false);
                     activeCard.GetComponent<CardScripts>().MoveToTarger(enemy.transform);
@@ -240,7 +253,7 @@ namespace Assets.Scripts.Managers
                 }
                 else
                 {
-                    activeCard.ChangeAttackState(false);
+                   activeCard.ChangeAttackState(false);
 
                     activeCard.GetComponent<CardScripts>().MoveToTarger(_playerHero.transform);
                     yield return new WaitForSeconds(0.75f);
@@ -383,10 +396,27 @@ namespace Assets.Scripts.Managers
         
         public void HightLightTarget(bool hightlight)
         {
-            foreach (var card in _enemyFieldCards)
+            List<BattleCard> targets = new List<BattleCard>();
+
+            if (_enemyFieldCards.Exists(x => x.IsProvocation))
+                targets = _enemyFieldCards.FindAll(x => x.IsProvocation);
+            else
+            {
+                targets = _enemyFieldCards;
+                _enemyHero.HighLightAsTarget(hightlight);
+            }
+                
+
+            foreach (var card in targets)
                 card.HighLightAsTarget(hightlight);
 
-            _enemyHero.HighLightAsTarget(hightlight);
+            
         }
+
+        //public void OnCast()
+        //{
+        //    AddCardInField();
+        //    RemoveHandCard();
+        //}
     }
 }

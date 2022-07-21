@@ -15,5 +15,6 @@ MonoBehaviour:
   _attackPoints: 4
   _defencePoints: 4
   _manaCostPoints: 3
+  _cardAbility: 1
   _cardName: KISH
   _cardMainSprite: {fileID: 21300000, guid: 44b507744bd5f49499449b7d2498e398, type: 3}

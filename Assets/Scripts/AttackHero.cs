@@ -25,7 +25,8 @@ public class AttackHero : MonoBehaviour, IDropHandler
 
         BattleCard battleCard = eventData.pointerDrag.GetComponent<BattleCard>();
 
-        if(battleCard && battleCard.IsCanAttack && _type == HeroType.ENEMY)
+        if(battleCard && battleCard.IsCanAttack && _type == HeroType.ENEMY &&
+            !_gameManager.EnemyFieldCards.Exists(x => x.IsProvocation))
         {
             battleCard.ChangeAttackState(false);
             _gameManager.DamageHero(battleCard,true);
