@@ -1,119 +1,212 @@
-//using UnityEngine;
-//using Assets.Scripts.SO;
-//using Assets.Scripts.Models;
-//using Assets.Scripts.Managers;
-//using System.Collections.Generic;
-//using Assets.Scripts.Enums;
+using UnityEngine;
+using Assets.Scripts.Models;
+using Assets.Scripts.Managers;
+using System.Collections.Generic;
 
-//namespace Assets.Scripts.Controllers
-//{
+namespace Assets.Scripts.Controllers
+{
+    public class CardController : MonoBehaviour
+    {
+        public Card _card;
+        public bool _isPlayerCard;
 
-//    public class CardController : MonoBehaviour
-//    {
-//        public CardDataSO CardatSo => _cardDataSO;
-//        public BattleCard BattleC => _battleCard;
-//        public CardScripts CardScr => _cardScript;
-//        public bool IsPlayerCard => _isPlayerCard;
-//        public int ManaCostPoints => _currentManaCostPoints;
-//        public int AttackPoints => _currentAttackPoints;
-//        public bool IsAlive => _currentDefencePoints > 0;
-//        public bool IsCanAttack => _isCanAttack;
-//        public bool IsPlaced => _isPlaced;
+        public CardInfo _cardInfo;
+        public CardMovement _cardMovement;
+        public CardAbilities _cardAbilities;
 
-//        public FieldType FieldType => _fieldType;
+        private GameManager _gameManager;
 
-//        private CardDataSO _cardDataSO;
-//        private bool _isPlayerCard;
-//        private BattleCard _battleCard;
-//        private CardScripts _cardScript;
-//        private GameManager _gameManager;
+        public void Init(Card card, bool isPlayerCard)
+        {
+            _card = card;
+            _gameManager = GameManager.instance;
+            _isPlayerCard = isPlayerCard;
 
-//        private int _currentDefencePoints;
-//        private int _currentAttackPoints;
-//        private int _currentManaCostPoints;
+            if(isPlayerCard)
+            {
+                _cardInfo.ShowCardInfo();
+                GetComponent<AttackCard>().enabled = false;
+            }
+            else
+            {
+                _cardInfo.HideCardInfo();
+            }
+        }
 
-//        private bool _isCanAttack;
-//        private bool _isPlaced;
-
-//        private Transform _defaultParent, _defaultTempCardParent;
-//        private FieldType _fieldType;
-
-//        public void Init(CardDataSO cardDataSO, bool isPlayerCard)
-//        {
-//            _cardDataSO = cardDataSO;
-//            _isPlayerCard = isPlayerCard;
-//            _gameManager = GameManager.instance;
-
-//            if(isPlayerCard)
-//            {
-//                _battleCard.SetupBattleCard(_cardDataSO);
-//                GetComponent<AttackCard>().enabled = false;
-//            }
-//            else
-//            {
-//                _battleCard.EnableCardBack(false);
-//            }
+        public void OnCast()
+        {
             
-//        }
+            if (_card.IsSpell && ((SpellCard)_card)._spellTarget != SpellCard.TargetType.NO_TARGET)
+                return;
 
-//        public void SetDefaultParent(Transform parent)
-//        {
-//            _defaultParent = parent;
-//        }
+            if(_isPlayerCard)
+            {
+                _gameManager._playerHandCards.Remove(this);
+                _gameManager._playerFieldCards.Add(this);
+                _gameManager.ReduceMana(true, _card.Manacost);
+                _gameManager.CheckCardsForManaAvailability();
+            }
+            else
+            {
+                _gameManager._enemyHandCards.Remove(this);
+                _gameManager._enemyFieldCards.Add(this);
+                _gameManager.ReduceMana(false, _card.Manacost);
+                _cardInfo.ShowCardInfo();
+                _cardInfo.HideMana(false);
+            }
+            _card.IsPlaced = true;
 
-//        public void OnCast()
-//        {
-//            if(IsPlayerCard)
-//            {
-//                _gameManager.ReduceMana(true, BattleC.ManaCostPoints);
-//                _gameManager.CheckCardForAvaliabtlity();
-//            }
-//            else
-//            {
-//                _gameManager.ReduceMana(false, BattleC.ManaCostPoints);
-//            }
-//            is
-//        }
-//        public void GetPlaced(bool placed)
-//        {
-//            _isPlaced = placed;
-//        }
-//        public void OnTakeDamage(CardController attacker = null)
-//        {
-//            CheckForALive();
-//        }
+            if (_card.HasAbility)
+                _cardAbilities.OnCast();
 
-//        public void OnDamageDeal()
-//        {
-//            BattleC.ChangeAttackState(false);
-//            BattleC.EnableCardLight(false);
-//        }
+            if (_card.IsSpell)
+                UseSpell(null);
 
-//        public void CheckForALive()
-//        {
-//            if (_battleCard.IsAlive)
-//                BattleC.RefreshData();
-//            else
-//                DestroyCard();
-//        }
+            UIController.instance.UpdateHPAndMana();
+        }
 
-//        public void DestroyCard()
-//        {
-//            _cardScript.OnEndDrag(null);
+        public void OnTakeDamage(CardController attacker = null)
+        {
+            CheckForALive();
+            _cardAbilities.OnDamageTake(attacker);
+        }
 
-//            RemoveCardFromList(_gameManager.ListPlayerHand);
-//            RemoveCardFromList(_gameManager.ListPlayerField);
-//            RemoveCardFromList(_gameManager.ListEnemyHand);
-//            RemoveCardFromList(_gameManager.ListEnemyField);
+        public void OnDamageDeal()
+        {
+            _card.timeDealDamage++;
+            _card.CanAttack = false;
+            _cardInfo.HightLightCard(false);
 
+            if (_card.HasAbility)
+                _cardAbilities.OnDamageDeal();
+        }
 
-//            Destroy(gameObject);
-//        }
+        public void UseSpell(CardController target)
+        {
+            var spellCard = (SpellCard)_card;
 
-//        private void RemoveCardFromList(List<CardController> list)
-//        {
-//            if (list.Exists(x => x == this))
-//                list.Remove(this);
-//        }
-//    }
-//}
+            switch(spellCard._spell)
+            {
+                case SpellCard.SpellType.HEAL_ALLY_FIELD_CARDS:
+
+                    var allyCards = _isPlayerCard ?
+                                    _gameManager._playerFieldCards :
+                                    _gameManager._enemyFieldCards;
+
+                    foreach (var card in allyCards)
+                    {
+                        card._card.Defence += spellCard._spellValue;
+                        card._cardInfo.RefreshData();
+                    }
+                    break;
+
+                case SpellCard.SpellType.DAMAGE_ENEMY_FIELD_CARDS:
+
+                    var enemyCard = _isPlayerCard ?
+                                    new List<CardController>(_gameManager._enemyFieldCards) :
+                                    new List<CardController>(_gameManager._playerFieldCards);
+
+                    foreach (var card in enemyCard)
+                        GiveDamageTo(card, spellCard._spellValue);
+
+                    break;
+
+                case SpellCard.SpellType.HEAL_ALLY_HERO:
+
+                    if (_isPlayerCard)
+                        _gameManager._currentGame._player._hp += spellCard._spellValue;
+                    else
+                        _gameManager._currentGame._enemy._hp += spellCard._spellValue;
+
+                    UIController.instance.UpdateHPAndMana();
+
+                    break;
+
+                case SpellCard.SpellType.DAMAGE_ENEMY_HERO:
+
+                    if (_isPlayerCard)
+                        _gameManager._currentGame._enemy._hp -= spellCard._spellValue;
+                    else
+                        _gameManager._currentGame._player._hp -= spellCard._spellValue;
+
+                    UIController.instance.UpdateHPAndMana();
+                    _gameManager.CheckForResult();
+
+                    break;
+
+                case SpellCard.SpellType.HEAL_ALLY_CARD:
+
+                    target._card.Defence += spellCard._spellValue;
+                    break;
+
+                case SpellCard.SpellType.DAMAGE_ENEMY_CARD:
+                    GiveDamageTo(target, spellCard._spellValue);
+                    break;
+
+                case SpellCard.SpellType.SHIELD_ON_ALLY_CARD:
+
+                    if (!target._card._abilities.Exists(x => x == Card.AbilityType.SHIELD))
+                        target._card._abilities.Add(Card.AbilityType.SHIELD);
+
+                    break;
+
+                case SpellCard.SpellType.PROVOCATION_ON_ALLY_CARD:
+
+                    if (!target._card._abilities.Exists(x => x == Card.AbilityType.PROVOCATION))
+                        target._card._abilities.Add(Card.AbilityType.PROVOCATION);
+
+                    break;
+
+                case SpellCard.SpellType.BUFF_CARD_DAMAGE:
+                    target._card.Attack += spellCard._spellValue;
+                    break;
+
+                case SpellCard.SpellType.DEBUFF_CARD_DAMAGE:
+                    target._card.Attack = Mathf.Clamp(target._card.Attack - spellCard._spellValue,0,int.MaxValue);
+                    break;
+            }
+
+            if(target != null)
+            {
+                target._cardAbilities.OnCast();
+                target.CheckForALive();
+            }
+
+            DestroyCard();
+        }
+
+        private void GiveDamageTo(CardController card, int damage)
+        {
+            card._card.GetDamage(damage);
+            card.CheckForALive();
+            card.OnTakeDamage();
+        }
+
+        public void CheckForALive()
+        {
+            if (_card.isALive)
+                _cardInfo.RefreshData();
+            else
+                DestroyCard();
+        }
+
+        public void DestroyCard()
+        {
+            _cardMovement.OnEndDrag(null);
+
+            RemoveCardFromList(_gameManager._enemyFieldCards);
+            RemoveCardFromList(_gameManager._enemyHandCards);
+            RemoveCardFromList(_gameManager._playerFieldCards);
+            RemoveCardFromList(_gameManager._playerHandCards);
+
+            gameObject.SetActive(false);
+            //Destroy(gameObject);
+        }
+
+        private void RemoveCardFromList(List<CardController> list)
+        {
+            if (list.Exists(x => x == this))
+                list.Remove(this);
+        }
+    }
+}

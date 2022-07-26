@@ -2,46 +2,46 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using Assets.Scripts.Models;
 using Assets.Scripts.Managers;
-using Assets.Scripts.Enums;
+using Assets.Scripts.Controllers;
 
+public enum FieldType
+{
+    SELF_HAND,
+    SELF_FIELD,
+    ENEMY_HAND,
+    ENEMY_FIELD
+}
 public class DropPlaceScript : MonoBehaviour, IDropHandler, IPointerEnterHandler, IPointerExitHandler
 {
-    [SerializeField] private GameManager _gameManager;
-
-
-    public FieldType Type;
+    public FieldType type;
     public void OnDrop(PointerEventData eventData)
     {
-        if (Type != FieldType.SELF_FIELD)
+        if (type != FieldType.SELF_FIELD)
             return;
 
-        CardScripts card = eventData.pointerDrag.GetComponent<CardScripts>();
-        BattleCard battleCard = card.GetComponent<BattleCard>();
+        CardController card = eventData.pointerDrag.GetComponent<CardController>();
 
-        if (card && _gameManager.PlayerFieldCardsCount < 6 && _gameManager.IsPlayerTurn 
-            && _gameManager.PlayerMana >= battleCard.ManaCostPoints
-            && !battleCard.IsPlaced)
+        if (card && GameManager.instance.IsPlayerTurn &&
+            GameManager.instance._currentGame._player._mana >= card._card.Manacost &&
+            !card._card.IsPlaced)
         {
+            if(!card._card.IsSpell)
+            card._cardMovement._defaultParent = transform;
 
-            battleCard.OnCast();
-
-
-            card._defaultParent = transform;
-
-        }
-        
+            card.OnCast();
+        }       
     }
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        if (eventData.pointerDrag == null || Type == FieldType.ENEMY_FIELD ||
-            Type == FieldType.ENEMY_HAND || Type == FieldType.SELF_HAND)
+        if (eventData.pointerDrag == null || type == FieldType.ENEMY_FIELD || 
+            type == FieldType.ENEMY_HAND || type == FieldType.SELF_HAND)
             return;
 
-        CardScripts card = eventData.pointerDrag.GetComponent<CardScripts>();
+        CardMovement card = eventData.pointerDrag.GetComponent<CardMovement>();
 
         if (card)
-            card._defaultTempCardParent = transform;
+            card._defaultTempCardParant = transform;
     }
 
     public void OnPointerExit(PointerEventData eventData)
@@ -49,9 +49,9 @@ public class DropPlaceScript : MonoBehaviour, IDropHandler, IPointerEnterHandler
         if (eventData.pointerDrag == null)
             return;
 
-        CardScripts card = eventData.pointerDrag.GetComponent<CardScripts>();
+        CardMovement card = eventData.pointerDrag.GetComponent<CardMovement>();
 
-        if (card && card._defaultTempCardParent == transform)
-            card._defaultTempCardParent = card._defaultParent;
+        if (card && card._defaultTempCardParant == transform)
+            card._defaultTempCardParant = card._defaultParent;
     }
 }

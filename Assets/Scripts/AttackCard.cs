@@ -1,27 +1,29 @@
 using Assets.Scripts.Models;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using Assets.Scripts.Enums;
 using System;
+using Assets.Scripts.Managers;
+using Assets.Scripts.Controllers;
 
 public class AttackCard : MonoBehaviour, IDropHandler
 {
-    [SerializeField] private BattleCard _battleCard;
-    public static event Action<BattleCard, BattleCard> CardFigthAction;
-
     public void OnDrop(PointerEventData eventData)
     {
-        BattleCard card = eventData.pointerDrag.GetComponent<BattleCard>(),
-                   defender = GetComponent<BattleCard>();
+        if (!GameManager.instance.IsPlayerTurn)
+            return;
 
-        if (card && card.IsCanAttack && GetComponent<BattleCard>().FieldType == FieldType.ENEMY_FIELD)
+        CardController attacker = eventData.pointerDrag.GetComponent<CardController>(),
+                       defender = GetComponent<CardController>();
+
+        if(attacker && attacker._card.CanAttack &&
+            defender._card.IsPlaced)
         {
-            if (_battleCard.GameManager.EnemyFieldCards.Exists(x => x.IsProvocation) &&
-                !defender.IsProvocation)
+            if (GameManager.instance._enemyFieldCards.Exists(x => x._card.IsProvocation) &&
+                !defender._card.IsProvocation)
                 return;
 
-            card.ChangeAttackState(false);
-            CardFigthAction?.Invoke(card, GetComponent<BattleCard>());
+
+            GameManager.instance.CardsFight(attacker, defender);
         }
     }
 }

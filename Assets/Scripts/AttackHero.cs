@@ -1,3 +1,4 @@
+using Assets.Scripts.Controllers;
 using Assets.Scripts.Managers;
 using Assets.Scripts.Models;
 using UnityEngine;
@@ -12,29 +13,26 @@ public class AttackHero : MonoBehaviour, IDropHandler
         PLAYER
     }
 
-    [SerializeField] private HeroType _type;
-    [SerializeField] private Image _cardHeroImage;
-    [SerializeField] private GameManager _gameManager;
-    [SerializeField] private Color _NormalColorHero;
-    [SerializeField] private Color _TargetColorHero;
+    public HeroType _type;
+    public Color _normalHeroColor;
+    public Color _targetHeroColor;
 
     public void OnDrop(PointerEventData eventData)
     {
-        if (!_gameManager.IsPlayerTurn)
+        if (!GameManager.instance.IsPlayerTurn)
             return;
 
-        BattleCard battleCard = eventData.pointerDrag.GetComponent<BattleCard>();
+        CardController card = eventData.pointerDrag.GetComponent<CardController>();
 
-        if(battleCard && battleCard.IsCanAttack && _type == HeroType.ENEMY &&
-            !_gameManager.EnemyFieldCards.Exists(x => x.IsProvocation))
+        if(card && card._card.CanAttack && _type == HeroType.ENEMY &&
+            !GameManager.instance._enemyFieldCards.Exists(x => x._card.IsProvocation))
         {
-            battleCard.ChangeAttackState(false);
-            _gameManager.DamageHero(battleCard,true);
+            GameManager.instance.DamageHero(card, true);
         }
     }
 
-    public void HighLightAsTarget(bool hightlight)
+    public void HightLightTarget(bool hightLight)
     {
-        _cardHeroImage.color = hightlight ? _TargetColorHero : _NormalColorHero;
+        GetComponent<Image>().color = hightLight ? _targetHeroColor : _normalHeroColor;
     }
 }

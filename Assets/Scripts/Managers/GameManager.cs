@@ -2,70 +2,92 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Assets.Scripts.Models;
+using Assets.Scripts.Controllers;
 using UnityEngine.UI;
 using TMPro;
-using Assets.Scripts.SO;
-using Assets.Scripts.Enums;
 
 namespace Assets.Scripts.Managers
 {
-    public class GameManager : MonoBehaviour
+    public class Game
     {
-        public int HealthPlayer => _healthPlayer;
-        public int HealthEnemy => _healtEnemy;
-        public int PlayerMana => _playerMana;
-        public int EnemyMana => _enemyMana;
-        public List<BattleCard> EnemyFieldCards => _enemyFieldCards;
-        
-        public bool IsPlayerTurn
+        public Player _player;
+        public Player _enemy;
+        public List<Card> _enemyDeck, _playerDeck;
+
+        public Game()
         {
-            get { return turn % 2 == 0; }
+            _enemyDeck = GiveDeckCard();
+            _playerDeck = GiveDeckCard();
+            _player = new Player();
+            _enemy = new Player();
+            UIController.instance.UpdateEnemyDeckCard(_enemyDeck.Count);
+            UIController.instance.UpdatePlayerDeckCard(_playerDeck.Count);         
         }
 
-        public int PlayerFieldCardsCount => _playerFieldCards.Count;
+        List<Card> GiveDeckCard()
+        {
+            List<Card> list = new List<Card>();
+            list.Add(CardManager.allCards[6].GetCopy());
+
+           // UIController.instance.UpdatePlayerDeckCard(list.Count);
+
+            for (int i = 0; i < CardManager.allCards.Count; i++)
+            {
+                var card = CardManager.allCards[Random.Range(0, CardManager.allCards.Count)];
+                
+                
+                if (card.IsSpell)
+                {
+                    list.Add(((SpellCard)card).GetCopy());
+                }
+                else
+                {
+                    list.Add(card.GetCopy());
+                }
+                
+            }
+            return list;
+        }
+    }
+    public class GameManager : MonoBehaviour
+    {
+        public bool IsPlayerTurn { get { return _turn % 2 == 0; } }
+        public static GameManager instance;
+        public Game _currentGame;
+        public Transform _enemyHand;
+        public Transform _enemyField;
+        public Transform _playerHand;
+        public Transform _playerField;
+        public GameObject _cardPref;
+
+        private int _turn;
+        private int _turnTime = 30;
+
+        public AttackHero _enemyHero;
+        public AttackHero _playerHero;
+        public AI _enemyAI;
+
+        public List<CardController> _playerHandCards = new List<CardController>(),
+                                    _playerFieldCards = new List<CardController>(),
+                                    _enemyHandCards = new List<CardController>(),
+                                    _enemyFieldCards = new List<CardController>();
 
 
-        [SerializeField] private CardsManager _cardsManager;
-        [SerializeField] private Transform _enemyHand;
-        [SerializeField] private Transform _playerHand;
-        [SerializeField] private Transform _enemyField;
-        [SerializeField] private Transform _playerField;
-        [SerializeField] private BattleCard _cardPref;
-        [SerializeField] private GameObject _resultGO;
 
-        [SerializeField] private TMP_Text _turnTimeText;
-        [SerializeField] private TMP_Text _playerManaText;
-        [SerializeField] private TMP_Text _enemyManaText;
-        [SerializeField] private TMP_Text _healthPlayerHeroText;
-        [SerializeField] private TMP_Text _healthEnemyHeroText;
-        [SerializeField] private TMP_Text _resultWinnerText;
-
-        [SerializeField] private Button _endTurnButton;
-        [SerializeField] private AttackHero _enemyHero;
-        [SerializeField] private AttackHero _playerHero;
-
-        private List<BattleCard> _playerHandCards = new List<BattleCard>(),
-                                 _playerFieldCards = new List<BattleCard>(),
-                                 _enemyHandCards = new List<BattleCard>(),
-                                 _enemyFieldCards = new List<BattleCard>();
-
-        private int turn;
-        private int turnTime = 10;
-        private int _enemyMana = 10;
-        private int _playerMana = 10;
-        private int _healthPlayer;
-        private int _healtEnemy;
-
-        private List<CardDataSO> _enemyDeck, _playerDeck;
 
         private void Awake()
+        {
+            if (instance == null)
+                instance = this;
+        }
+        private void Start()
         {
             StartGame();
         }
 
         public void RestartGame()
         {
-            StopAllCoroutines();
+            StopAllCoroutines();        
 
             foreach (var card in _playerHandCards)
                 Destroy(card.gameObject);
@@ -80,343 +102,224 @@ namespace Assets.Scripts.Managers
             _playerFieldCards.Clear();
             _enemyHandCards.Clear();
             _enemyFieldCards.Clear();
+            
 
             StartGame();
+
         }
 
-        public void StartGame()
+        private void StartGame()
         {
-            AttackCard.CardFigthAction += OnCardFigthAction;
+            _turn = 0;
 
-            turn = 0;
-            _endTurnButton.interactable = true;
+            _currentGame = new Game();
+            GiveHandCards(_currentGame._enemyDeck, _enemyHand);
+            GiveHandCards(_currentGame._playerDeck, _playerHand);
 
-            _enemyDeck = GiveDeckCard();
-            _playerDeck = GiveDeckCard();
-
-            _enemyMana = 10;
-            _playerMana = 10;
-            _healtEnemy = 30;
-            _healthPlayer = 30;
-
-            GiveHandCard(_enemyDeck, _enemyHand);
-            GiveHandCard(_playerDeck, _playerHand);
-
-            ShowMana();
-            ShowHealthHero();
-
-            _resultGO.SetActive(false);
+            UIController.instance.StartGame();
 
             StartCoroutine(TurnFunc());
         }
 
-        private void OnCardFigthAction(BattleCard playerCard, BattleCard enemyCard)
-        {
-            CardsFight(playerCard, enemyCard);
-        }
-
-        private List<CardDataSO> GiveDeckCard()
-        {
-            List<CardDataSO> list = new List<CardDataSO>();
-            for (int i = 0; i < _cardsManager.AllCards.Count; i++)
-                list.Add(_cardsManager.GetRandomCard());
-            return list;
-        }
-
-        private void GiveHandCard(List<CardDataSO> deck, Transform hand)
+        private void GiveHandCards(List<Card> deck, Transform hand)
         {
             int i = 0;
             while (i++ < 4)
-                GiveCardToHand(deck, hand);
+                GiveCardToHand(deck,hand);
         }
 
-        private void GiveCardToHand(List<CardDataSO> deck, Transform hand)
+        private void GiveCardToHand(List<Card> deck, Transform hand)
         {
             if (deck.Count == 0)
                 return;
 
-            CardDataSO card = deck[0];
-
-            BattleCard cardGO = Instantiate(_cardPref, hand, false);
-
-
-
-            if (hand == _enemyHand)
-            {
-                cardGO.EnableCardBack(true);
-                _enemyHandCards.Add(cardGO);
-                cardGO.SetupBattleCard(card, false);
-            }
-            else
-            {
-                cardGO.EnableCardBack(false);
-                _playerHandCards.Add(cardGO);
-                cardGO.GetComponent<AttackCard>().enabled = false;
-                cardGO.SetupBattleCard(card, true);
-            }
+            CreateCardPref(deck[0], hand);
 
             deck.RemoveAt(0);
+
+            UIController.instance.UpdateEnemyDeckCard(_currentGame._enemyDeck.Count);
+            UIController.instance.UpdatePlayerDeckCard(_currentGame._playerDeck.Count);
+        }
+
+        private void CreateCardPref(Card card, Transform hand)
+        {
+            GameObject cardGO = Instantiate(_cardPref, hand, false);
+            CardController cardC = cardGO.GetComponent<CardController>();
+
+            cardC.Init(card, hand == _playerHand);
+
+            if (cardC._isPlayerCard)
+                _playerHandCards.Add(cardC);
+            else
+                _enemyHandCards.Add(cardC);
         }
 
         private IEnumerator TurnFunc()
         {
-            turnTime = 30;
-            _turnTimeText.text = turnTime.ToString();
+            _turnTime = 30;
+            UIController.instance.UpdateTurnTime(_turnTime);
 
             foreach (var card in _playerFieldCards)
             {
-                card.EnableCardLight(false);
-            }
-
-            CheckCardForAvaliabtlity();
+                card._cardInfo.HightLightCard(false);
+            }          
+                
+            CheckCardsForManaAvailability();
 
             if (IsPlayerTurn)
             {
                 foreach (var card in _playerFieldCards)
                 {
-                    card.ChangeAttackState(true);
-                    card.EnableCardLight(true);
-                    card.CardAbilities.OnNewTurn();
+                    card._card.CanAttack = true;
+                    card._cardInfo.HightLightCard(true);
+                    card._cardAbilities.OnNewTurn();
                 }
+                    
 
-
-                while (turnTime-- > 0)
+                while(_turnTime-- > 0)
                 {
-                    _turnTimeText.text = turnTime.ToString();
+                    UIController.instance.UpdateTurnTime(_turnTime);
                     yield return new WaitForSeconds(1);
                 }
-
                 ChangeTurn();
             }
             else
             {
+                
                 foreach (var card in _enemyFieldCards)
-                    card.ChangeAttackState(true);
-
-
-               StartCoroutine(EnemyTurn(_enemyHandCards));
-            }
-        }
-
-        IEnumerator EnemyTurn(List<BattleCard> cards)
-        {
-            yield return new WaitForSeconds(1);
-
-            int count = cards.Count == 1 ? 1 :
-                Random.Range(1, cards.Count);
-
-            for (int i = 0; i < count; i++)
-            {
-                if (_enemyFieldCards.Count > 5 || _enemyMana == 0
-                    || _enemyHandCards.Count == 0)
-                    break;
-
-                List<BattleCard> cardList = cards.FindAll(x => _enemyMana >= x.ManaCostPoints);
-
-                if (cardList.Count == 0)
-                    break;
-
-                cardList[0].GetComponent<CardScripts>().MoveToField(_enemyField);
-
-                ReduceMana(false, cardList[0].ManaCostPoints);
-
-                yield return new WaitForSeconds(0.5f);
-
-                cardList[0].EnableCardBack(false);
-                cardList[0].transform.SetParent(_enemyField);
-                cardList[0].SetFieldType(FieldType.ENEMY_FIELD);
-                cardList[0].OnCast();
-            }
-
-            yield return new WaitForSeconds(1);
-
-            while (_enemyFieldCards.Exists(x => x.IsCanAttack))
-            {
-                var activeCard = _enemyFieldCards.FindAll(x => x.IsCanAttack)[0];
-                bool hasProvocation = _playerFieldCards.Exists(x => x.IsProvocation);
-
-                if (hasProvocation || Random.Range(0, 2) == 0 && _playerFieldCards.Count > 0)
-                {
-                    BattleCard enemy;
-                    if (hasProvocation)
-                        enemy = _playerFieldCards.Find(x => x.IsProvocation);
-                    else
-                        enemy = _playerFieldCards[Random.Range(0, _playerFieldCards.Count)];
-
-                    //var enemy = _playerFieldCards[Random.Range(0, _playerFieldCards.Count)];
-
-                    activeCard.ChangeAttackState(false);
-                    activeCard.GetComponent<CardScripts>().MoveToTarger(enemy.transform);
-                    yield return new WaitForSeconds(0.75f);
-
-                    CardsFight(enemy, activeCard);
+                {                  
+                    card._card.CanAttack = true;
+                    card._cardAbilities.OnNewTurn();                                      
                 }
-                else
+
+                _enemyAI.MakeTurn();               
+
+                while(_turnTime-- > 0)
                 {
-                   activeCard.ChangeAttackState(false);
-
-                    activeCard.GetComponent<CardScripts>().MoveToTarger(_playerHero.transform);
-                    yield return new WaitForSeconds(0.75f);
-
-                    DamageHero(activeCard, false);
+                    UIController.instance.UpdateTurnTime(_turnTime);
+                    yield return new WaitForSeconds(1);
                 }
-                yield return new WaitForSeconds(0.2f);
+                ChangeTurn();
             }
-            yield return new WaitForSeconds(1);
-            ChangeTurn();
-        }
-        private void GiveNewCards()
-        {
-
-            GiveCardToHand(_enemyDeck, _enemyHand);
-            GiveCardToHand(_playerDeck, _playerHand);
         }
 
         public void ChangeTurn()
         {
             StopAllCoroutines();
-            turn++;
-            _endTurnButton.interactable = IsPlayerTurn;
+            _turn++;
+
+            UIController.instance.DisableTurnButton();
 
             if (IsPlayerTurn)
             {
                 GiveNewCards();
-                _playerMana = 10;
-                _enemyMana = 10;
-                ShowMana();
-            }
+                _currentGame._player.InCreaseManapool();
+                _currentGame._player.RestoreRoundMana();
 
+                UIController.instance.UpdateHPAndMana();
+            }
+            else
+            {
+                _currentGame._enemy.InCreaseManapool();
+                _currentGame._enemy.RestoreRoundMana();
+            }
+                
 
             StartCoroutine(TurnFunc());
+
         }
 
-        public void AddCardInField(FieldType fieldType, BattleCard card)
+        private void GiveNewCards()
         {
-            if (fieldType == FieldType.SELF_FIELD)
-                _playerFieldCards.Add(card);
-
-            if (fieldType == FieldType.ENEMY_FIELD)
-                _enemyFieldCards.Add(card);
+            GiveCardToHand(_currentGame._enemyDeck, _enemyHand);
+            GiveCardToHand(_currentGame._playerDeck, _playerHand);
         }
 
-        public void RemoveHandCard(FieldType fieldType, BattleCard card)
+        public void CardsFight(CardController attacker, CardController defender)
         {
-            if (fieldType == FieldType.SELF_HAND)
-                _playerHandCards.Remove(card);
+            defender._card.GetDamage(attacker._card.Attack);
+            attacker.OnDamageDeal();
+            defender.OnTakeDamage(attacker);
 
-            if (fieldType == FieldType.ENEMY_HAND)
-                _enemyHandCards.Remove(card);
-        }
+            attacker._card.GetDamage(defender._card.Attack);
+            attacker.OnTakeDamage();
 
-        private void CardsFight(BattleCard playerCard, BattleCard enemyCard)
-        {
-            enemyCard.GetDamage(playerCard.AttackPoints);
-            playerCard.GetDamage(enemyCard.AttackPoints);
-
-            if (playerCard.IsAlive)
-                playerCard.RefreshData();
-            else
-                DestroyCard(playerCard);
-
-
-            if (enemyCard.IsAlive)
-                enemyCard.RefreshData();
-            else
-                DestroyCard(enemyCard);
-        }
-
-        private void DestroyCard(BattleCard card)
-        {
-            card.GetComponent<CardScripts>().OnEndDrag(null);
-
-            if (_enemyFieldCards.Exists(x => x == card))
-                _enemyFieldCards.Remove(card);
-
-            if (_playerFieldCards.Exists(x => x == card))
-                _playerFieldCards.Remove(card);
-
-            Destroy(card.gameObject);
-        }
-
-        private void ShowMana()
-        {
-            _playerManaText.text = _playerMana.ToString();
-            _enemyManaText.text = _enemyMana.ToString();
-        }
-
-        public void ShowHealthHero()
-        {
-            _healthPlayerHeroText.text = _healthPlayer.ToString();
-            _healthEnemyHeroText.text = _healtEnemy.ToString();
+            attacker.CheckForALive();
+            defender.CheckForALive();
         }
 
         public void ReduceMana(bool playerMana, int manaCost)
         {
             if (playerMana)
-                _playerMana = Mathf.Clamp(_playerMana - manaCost, 0, int.MaxValue);
+                _currentGame._player._mana = manaCost;
             else
-                _enemyMana = Mathf.Clamp(_enemyMana - manaCost, 0, int.MaxValue);
+                _currentGame._enemy._mana = manaCost;
 
-            ShowMana();
+            UIController.instance.UpdateHPAndMana();
         }
 
-        public void DamageHero(BattleCard battleCard, bool isEnemyAttack)
+        public void DamageHero(CardController card, bool isEnemyAttack)
         {
             if (isEnemyAttack)
-                _healtEnemy = Mathf.Clamp(_healtEnemy - battleCard.AttackPoints, 0, int.MaxValue);
+                _currentGame._enemy.GetDamage(card._card.Attack);
             else
-                _healthPlayer = Mathf.Clamp(_healthPlayer - battleCard.AttackPoints, 0, int.MaxValue);
+                _currentGame._player.GetDamage(card._card.Attack);
 
-            ShowHealthHero();
-            battleCard.EnableCardLight(false);
-            ChechForResult();
+            UIController.instance.UpdateHPAndMana();
+            card.OnDamageDeal();
+            CheckForResult();
         }
 
-        private void ChechForResult()
+        public void CheckForResult()
         {
-            if(_healtEnemy == 0 || _healthPlayer == 0)
+            if(_currentGame._enemy._hp == 0 || _currentGame._player._hp == 0)
             {
-                _resultGO.SetActive(true);
                 StopAllCoroutines();
-
-                if (_healtEnemy == 0)
-                    _resultWinnerText.text = "SnoopDog - WIN!";
-                else
-                    _resultWinnerText.text = "Gucci Mane - WIN!";
+                UIController.instance.ShowResult();
+                
             }
         }
 
-        public void CheckCardForAvaliabtlity()
+        public void CheckCardsForManaAvailability()
         {
             foreach (var card in _playerHandCards)
-            {
-                card.CheckForAvaliability(_playerMana);
-            }
+                card._cardInfo.HightLightManaAvaliability(_currentGame._player._mana);
         }
-        
-        public void HightLightTarget(bool hightlight)
-        {
-            List<BattleCard> targets = new List<BattleCard>();
 
-            if (_enemyFieldCards.Exists(x => x.IsProvocation))
-                targets = _enemyFieldCards.FindAll(x => x.IsProvocation);
+        public void HightLightTargets(CardController attacker,bool hightLight)
+        {
+            List<CardController> targets = new List<CardController>();
+
+            if(attacker._card.IsSpell)
+            {
+                var spellCard = (SpellCard)attacker._card;
+
+                if (spellCard._spellTarget == SpellCard.TargetType.NO_TARGET)
+                    targets = new List<CardController>();
+                else if (spellCard._spellTarget == SpellCard.TargetType.ALLY_CARD_TARGET)
+                    targets = _playerFieldCards;
+                else
+                    targets = _enemyFieldCards;
+            }
             else
             {
-                targets = _enemyFieldCards;
-                _enemyHero.HighLightAsTarget(hightlight);
-            }
-                
+                if (_enemyFieldCards.Exists(x => x._card.IsProvocation))
+                    targets = _enemyFieldCards.FindAll(x => x._card.IsProvocation);
+                else
+                {
+                    targets = _enemyFieldCards;
 
+                   // if(!attacker._card.IsSpell)
+                    _enemyHero.HightLightTarget(hightLight);
+                }
+            }              
             foreach (var card in targets)
-                card.HighLightAsTarget(hightlight);
-
-            
+            {
+                if (attacker._card.IsSpell)
+                    card._cardInfo.HightLightAsSpellTarget(hightLight);
+                else
+                    card._cardInfo.HightLightTarget(hightLight);
+            }    
         }
-
-        //public void OnCast()
-        //{
-        //    AddCardInField();
-        //    RemoveHandCard();
-        //}
     }
 }
