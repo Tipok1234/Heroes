@@ -4,6 +4,7 @@ using UnityEngine;
 using Assets.Scripts.Models;
 using Assets.Scripts.Controllers;
 using UnityEngine.UI;
+using DG.Tweening;
 using TMPro;
 
 namespace Assets.Scripts.Managers
@@ -58,6 +59,7 @@ namespace Assets.Scripts.Managers
         public Transform _enemyField;
         public Transform _playerHand;
         public Transform _playerField;
+
         public GameObject _cardPref;
 
         private int _turn;
@@ -113,19 +115,22 @@ namespace Assets.Scripts.Managers
             _turn = 0;
 
             _currentGame = new Game();
-            GiveHandCards(_currentGame._enemyDeck, _enemyHand);
-            GiveHandCards(_currentGame._playerDeck, _playerHand);
+            StartCoroutine(GiveHandCards(_currentGame._enemyDeck, _enemyHand));
+            StartCoroutine(GiveHandCards(_currentGame._playerDeck, _playerHand));           
 
             UIController.instance.StartGame();
-
+    
             StartCoroutine(TurnFunc());
         }
 
-        private void GiveHandCards(List<Card> deck, Transform hand)
-        {
+        private IEnumerator GiveHandCards(List<Card> deck, Transform hand)
+        { 
             int i = 0;
             while (i++ < 4)
-                GiveCardToHand(deck,hand);
+            {
+                GiveCardToHand(deck, hand);
+                yield return new WaitForSeconds(0.25f);
+            }
         }
 
         private void GiveCardToHand(List<Card> deck, Transform hand)
@@ -143,15 +148,25 @@ namespace Assets.Scripts.Managers
 
         private void CreateCardPref(Card card, Transform hand)
         {
-            GameObject cardGO = Instantiate(_cardPref, hand, false);
+            Vector3 posDragCard = new Vector3(5, 0, 0);
+            GameObject cardGO = Instantiate(_cardPref,posDragCard,Quaternion.identity, hand);
+            //  GameObject cardGO = Instantiate(_cardPref, hand, false);
             CardController cardC = cardGO.GetComponent<CardController>();
 
             cardC.Init(card, hand == _playerHand);
+            
 
             if (cardC._isPlayerCard)
+            {
                 _playerHandCards.Add(cardC);
+                 cardC._cardMovement.MoveToHand(_playerHand);
+            }
             else
+            {
                 _enemyHandCards.Add(cardC);
+                cardC._cardMovement.MoveToHand(_enemyHand);
+            }
+                
         }
 
         private IEnumerator TurnFunc()

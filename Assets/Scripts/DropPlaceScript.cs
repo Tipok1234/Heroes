@@ -28,6 +28,8 @@ public class DropPlaceScript : MonoBehaviour, IDropHandler, IPointerEnterHandler
             if(!card._card.IsSpell)
             card._cardMovement._defaultParent = transform;
 
+
+            card._cardInfo.HideMana(false);
             card.OnCast();
         }       
     }

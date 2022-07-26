@@ -13,7 +13,7 @@ public class CardMovement : MonoBehaviour, IBeginDragHandler, IDragHandler, IEnd
     private Camera _mainCamera;
     private Vector3 _offset;
     public Transform _defaultParent;
-    public Transform _defaultTempCardParant;    
+    public Transform _defaultTempCardParant;
     private GameObject _tempCardGo;
 
     public bool isDraggble;
@@ -47,8 +47,6 @@ public class CardMovement : MonoBehaviour, IBeginDragHandler, IDragHandler, IEnd
 
         _tempCardGo.transform.SetParent(_defaultParent);
         _tempCardGo.transform.SetSiblingIndex(transform.GetSiblingIndex());
-
-        GetComponent<CardInfo>().HideMana(false);
 
         transform.SetParent(_defaultParent.parent);
         GetComponent<CanvasGroup>().blocksRaycasts = false;
@@ -107,18 +105,25 @@ public class CardMovement : MonoBehaviour, IBeginDragHandler, IDragHandler, IEnd
         if (_tempCardGo.transform.parent == _defaultParent)
             newIndex = _startID;
 
-        _tempCardGo.transform.SetSiblingIndex(newIndex);
+        _tempCardGo.transform.SetSiblingIndex(newIndex);      
     }
 
     public void MoveToField(Transform field)
     {
-        transform.SetParent(GameObject.Find("Canvas").transform);
+       transform.SetParent(GameObject.Find("Canvas").transform);
         transform.DOMove(field.position, 0.5f);
     }
 
     public void MoveToTarget(Transform target)
     {
         StartCoroutine(MoveToTargetCor(target));
+    }
+
+
+    public void MoveToHand(Transform field)
+    {
+        transform.SetParent(GameObject.Find("Canvas").transform);
+        transform.DOMove(field.position, 0.7f).OnComplete(() => transform.SetParent(field)); 
     }
 
     private IEnumerator MoveToTargetCor(Transform target)

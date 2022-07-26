@@ -200,7 +200,6 @@ namespace Assets.Scripts.Controllers
             RemoveCardFromList(_gameManager._playerHandCards);
 
             gameObject.SetActive(false);
-            //Destroy(gameObject);
         }
 
         private void RemoveCardFromList(List<CardController> list)

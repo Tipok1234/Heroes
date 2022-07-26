@@ -405,6 +405,7 @@ MonoBehaviour:
   _cardController: {fileID: 629090812423011256}
   _defaultParent: {fileID: 0}
   _defaultTempCardParant: {fileID: 0}
+  _position: {fileID: 2443604951445646135}
   isDraggble: 0
 --- !u!225 &5742759587486962160
 CanvasGroup:
