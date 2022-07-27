@@ -17,6 +17,9 @@ namespace Assets.Scripts.Managers
         public Transform _playerField;
 
         public GameObject _cardPref;
+        public GameObject _effectDamage;
+        public GameObject _effectHeal;
+        public GameObject _effectDeath;
 
         private int _turn;
         private int _turnTime = 30;
@@ -66,7 +69,7 @@ namespace Assets.Scripts.Managers
         {
             _turn = 0;
 
-            _currentGame = new Game();
+            _currentGame.InitGame();
             StartCoroutine(GiveHandCards(_currentGame._enemyDeck, _enemyHand));
             StartCoroutine(GiveHandCards(_currentGame._playerDeck, _playerHand));           
 
@@ -102,7 +105,6 @@ namespace Assets.Scripts.Managers
         {
             Vector3 posDragCard = new Vector3(5, 0, 0);
             GameObject cardGO = Instantiate(_cardPref,posDragCard,Quaternion.identity, hand);
-            //  GameObject cardGO = Instantiate(_cardPref, hand, false);
             CardController cardC = cardGO.GetComponent<CardController>();
 
             cardC.Init(card, hand == _playerHand);
@@ -151,7 +153,7 @@ namespace Assets.Scripts.Managers
             else
             {   
                 foreach (var card in _enemyFieldCards)
-                {                  
+                {
                     card._card.CanAttack = true;
                     card._cardAbilities.OnNewTurn();                                      
                 }
@@ -200,6 +202,9 @@ namespace Assets.Scripts.Managers
 
         public void CardsFight(CardController attacker, CardController defender)
         {
+            var effectDamagePos = new Vector3(-6, 0, 0);
+            Instantiate(_effectDamage, effectDamagePos ,Quaternion.identity);
+
             defender._card.GetDamage(attacker._card.Attack);
             attacker.OnDamageDeal();
             defender.OnTakeDamage(attacker);

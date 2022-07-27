@@ -5,7 +5,6 @@ using Assets.Scripts.Managers;
 using Assets.Scripts.Controllers;
 using Assets.Scripts.Enums;
 
-
 public class DropPlaceScript : MonoBehaviour, IDropHandler, IPointerEnterHandler, IPointerExitHandler
 {
     public FieldType type;

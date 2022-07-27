@@ -14,6 +14,7 @@ namespace Assets.Scripts.Controllers
         public CardInfo _cardInfo;
         public CardMovement _cardMovement;
         public CardAbilities _cardAbilities;
+       // [SerializeField] private GameObject _effectHeal;
 
         private GameManager _gameManager;
 
@@ -85,6 +86,7 @@ namespace Assets.Scripts.Controllers
         public void UseSpell(CardController target)
         {
             var spellCard = (SpellCard)_card;
+            var effectHealPos = new Vector3(-6, 0, 0);
 
             switch(spellCard._spell)
             {
@@ -99,6 +101,9 @@ namespace Assets.Scripts.Controllers
                         card._card.Defence += spellCard._spellValue;
                         card._cardInfo.RefreshData();
                     }
+
+                    Instantiate(_gameManager._effectHeal, effectHealPos, Quaternion.identity);
+
                     break;
 
                 case SpellType.DAMAGE_ENEMY_FIELD_CARDS:
@@ -115,10 +120,15 @@ namespace Assets.Scripts.Controllers
                 case SpellType.HEAL_ALLY_HERO:
 
                     if (_isPlayerCard)
+                    {
                         _gameManager._currentGame._player._hp += spellCard._spellValue;
+                    }  
                     else
+                    {
                         _gameManager._currentGame._enemy._hp += spellCard._spellValue;
+                    }
 
+                    Instantiate(_gameManager._effectHeal, effectHealPos, Quaternion.identity);
                     UIController.instance.UpdateHPAndMana();
 
                     break;
@@ -136,8 +146,10 @@ namespace Assets.Scripts.Controllers
                     break;
 
                 case SpellType.HEAL_ALLY_CARD:
+                   
+                        target._card.Defence += spellCard._spellValue;
+                    Instantiate(_gameManager._effectHeal, effectHealPos, Quaternion.identity);
 
-                    target._card.Defence += spellCard._spellValue;
                     break;
 
                 case SpellType.DAMAGE_ENEMY_CARD:
@@ -185,14 +197,20 @@ namespace Assets.Scripts.Controllers
 
         public void CheckForALive()
         {
+            var effectDeathPos = new Vector3(-6, 0, 0);
+
             if (_card.isALive)
                 _cardInfo.RefreshData();
-            else
+            else               
+            {
                 DestroyCard();
+                Instantiate(_gameManager._effectDeath, effectDeathPos, Quaternion.identity);
+            }
         }
 
         public void DestroyCard()
         {
+            
             _cardMovement.OnEndDrag(null);
 
             RemoveCardFromList(_gameManager._enemyFieldCards);

@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 58029a6f818f73848a349ee9918253d0, type: 3}
+  m_Name: UnitCardData_ScallyMilano
+  m_EditorClassIdentifier: 
+  _manaCostPoints: 3
+  _cardName: ScallyMilano
+  _cardMainSprite: {fileID: 21300000, guid: f13f6501df58edf449b9aefd5ab0bac5, type: 3}
+  _attackPoints: 3
+  _defencePoints: 3
+  _cardAbility: 0

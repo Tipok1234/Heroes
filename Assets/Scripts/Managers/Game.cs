@@ -4,11 +4,12 @@ using UnityEngine;
 
 public class Game : MonoBehaviour
 {
+        [SerializeField] private CardsManager _cardsManager;
         public Player _player;
         public Player _enemy;
         public List<Card> _enemyDeck, _playerDeck;
 
-        public Game()
+        public void InitGame()
         {
             _enemyDeck = GiveDeckCard();
             _playerDeck = GiveDeckCard();
@@ -21,13 +22,13 @@ public class Game : MonoBehaviour
         List<Card> GiveDeckCard()
         {
             List<Card> list = new List<Card>();
-            list.Add(CardsManager.allCards[6].GetCopy());
+            list.Add(_cardsManager.allCards[6].GetCopy());
 
             //UIController.instance.UpdatePlayerDeckCard(list.Count);
 
-            for (int i = 0; i < CardsManager.allCards.Count; i++)
+            for (int i = 0; i < _cardsManager.allCards.Count; i++)
             {
-                var card = CardsManager.allCards[Random.Range(0, CardsManager.allCards.Count)];
+                var card = _cardsManager.allCards[Random.Range(0, _cardsManager.allCards.Count)];
 
 
                 if (card.isSpell)

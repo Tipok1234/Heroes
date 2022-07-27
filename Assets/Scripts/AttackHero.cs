@@ -1,13 +1,11 @@
 using Assets.Scripts.Controllers;
 using Assets.Scripts.Managers;
-using Assets.Scripts.Models;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using Assets.Scripts.Enums;
 public class AttackHero : MonoBehaviour, IDropHandler
 {
-
     public HeroType _type;
     public Color _normalHeroColor;
     public Color _targetHeroColor;

@@ -1,10 +1,11 @@
 using Assets.Scripts.Enums;
+using Assets.Scripts.SO;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace Assets.Scripts.Managers
 { 
-public class Card : MonoBehaviour
+public class Card 
 {
         public bool isALive { get { return Defence > 0; } }
         public bool HasAbility { get { return _abilities.Count > 0; } }
@@ -25,19 +26,28 @@ public class Card : MonoBehaviour
         public int timeDealDamage;
 
 
-        public Card(string name, string logoPath, int attack, int defence, int manaCost, AbilityType abilityType = 0)
+        private UnitCardDataSO _unitCardDataSO;
+        public Card()
         {
-            Name = name;
-            Logo = Resources.Load<Sprite>(logoPath);
-            Attack = attack;
-            Defence = defence;
-            Manacost = manaCost;
+                
+        }
+
+        public Card(UnitCardDataSO unitCardDataSO)
+        {
+            
+            _unitCardDataSO = unitCardDataSO;
+
+            Name = _unitCardDataSO.CardName;
+            Logo = _unitCardDataSO.CardMainSprite;
+            Attack = _unitCardDataSO.AttackPoints;
+            Defence = _unitCardDataSO.DefencePoints;
+            Manacost = _unitCardDataSO.ManaCostPoints;
             CanAttack = false;
             IsPlaced = false;
             _abilities = new List<AbilityType>();
 
-            if (abilityType != 0)
-                _abilities.Add(abilityType);
+            if (_unitCardDataSO.CardAbility != 0)
+                _abilities.Add(_unitCardDataSO.CardAbility);
 
             timeDealDamage = 0;
         }
