@@ -1,55 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Assets.Scripts.Models;
+using Assets.Scripts.Enums;
 using Assets.Scripts.Controllers;
-using UnityEngine.UI;
-using DG.Tweening;
-using TMPro;
 
 namespace Assets.Scripts.Managers
 {
-    public class Game
-    {
-        public Player _player;
-        public Player _enemy;
-        public List<Card> _enemyDeck, _playerDeck;
-
-        public Game()
-        {
-            _enemyDeck = GiveDeckCard();
-            _playerDeck = GiveDeckCard();
-            _player = new Player();
-            _enemy = new Player();
-            UIController.instance.UpdateEnemyDeckCard(_enemyDeck.Count);
-            UIController.instance.UpdatePlayerDeckCard(_playerDeck.Count);         
-        }
-
-        List<Card> GiveDeckCard()
-        {
-            List<Card> list = new List<Card>();
-            list.Add(CardManager.allCards[6].GetCopy());
-
-           // UIController.instance.UpdatePlayerDeckCard(list.Count);
-
-            for (int i = 0; i < CardManager.allCards.Count; i++)
-            {
-                var card = CardManager.allCards[Random.Range(0, CardManager.allCards.Count)];
-                
-                
-                if (card.IsSpell)
-                {
-                    list.Add(((SpellCard)card).GetCopy());
-                }
-                else
-                {
-                    list.Add(card.GetCopy());
-                }
-                
-            }
-            return list;
-        }
-    }
     public class GameManager : MonoBehaviour
     {
         public bool IsPlayerTurn { get { return _turn % 2 == 0; } }
@@ -73,9 +29,6 @@ namespace Assets.Scripts.Managers
                                     _playerFieldCards = new List<CardController>(),
                                     _enemyHandCards = new List<CardController>(),
                                     _enemyFieldCards = new List<CardController>();
-
-
-
 
         private void Awake()
         {
@@ -104,7 +57,6 @@ namespace Assets.Scripts.Managers
             _playerFieldCards.Clear();
             _enemyHandCards.Clear();
             _enemyFieldCards.Clear();
-            
 
             StartGame();
 
@@ -165,8 +117,7 @@ namespace Assets.Scripts.Managers
             {
                 _enemyHandCards.Add(cardC);
                 cardC._cardMovement.MoveToHand(_enemyHand);
-            }
-                
+            }              
         }
 
         private IEnumerator TurnFunc()
@@ -188,8 +139,7 @@ namespace Assets.Scripts.Managers
                     card._card.CanAttack = true;
                     card._cardInfo.HightLightCard(true);
                     card._cardAbilities.OnNewTurn();
-                }
-                    
+                }        
 
                 while(_turnTime-- > 0)
                 {
@@ -199,8 +149,7 @@ namespace Assets.Scripts.Managers
                 ChangeTurn();
             }
             else
-            {
-                
+            {   
                 foreach (var card in _enemyFieldCards)
                 {                  
                     card._card.CanAttack = true;
@@ -238,10 +187,9 @@ namespace Assets.Scripts.Managers
                 _currentGame._enemy.InCreaseManapool();
                 _currentGame._enemy.RestoreRoundMana();
             }
-                
 
             StartCoroutine(TurnFunc());
-
+            
         }
 
         private void GiveNewCards()
@@ -305,13 +253,13 @@ namespace Assets.Scripts.Managers
         {
             List<CardController> targets = new List<CardController>();
 
-            if(attacker._card.IsSpell)
+            if(attacker._card.isSpell)
             {
                 var spellCard = (SpellCard)attacker._card;
 
-                if (spellCard._spellTarget == SpellCard.TargetType.NO_TARGET)
+                if (spellCard._spellTarget == TargetType.NO_TARGET)
                     targets = new List<CardController>();
-                else if (spellCard._spellTarget == SpellCard.TargetType.ALLY_CARD_TARGET)
+                else if (spellCard._spellTarget == TargetType.ALLY_CARD_TARGET)
                     targets = _playerFieldCards;
                 else
                     targets = _enemyFieldCards;
@@ -330,7 +278,7 @@ namespace Assets.Scripts.Managers
             }              
             foreach (var card in targets)
             {
-                if (attacker._card.IsSpell)
+                if (attacker._card.isSpell)
                     card._cardInfo.HightLightAsSpellTarget(hightLight);
                 else
                     card._cardInfo.HightLightTarget(hightLight);

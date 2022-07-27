@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Assets.Scripts.Managers;
 using Assets.Scripts.Controllers;
+using Assets.Scripts.Enums;
 
 public class AI : MonoBehaviour
 {
@@ -29,7 +30,7 @@ public class AI : MonoBehaviour
             if (cardList.Count == 0)
                 break;
 
-            if (cardList[0]._card.IsSpell)
+            if (cardList[0]._card.isSpell)
             {
                 CastSpell(cardList[0]);
                 yield return new WaitForSeconds(0.5f);
@@ -85,35 +86,35 @@ public class AI : MonoBehaviour
     {
         switch (((SpellCard)card._card)._spellTarget)
         {
-            case SpellCard.TargetType.NO_TARGET:
+            case TargetType.NO_TARGET:
 
                 switch (((SpellCard)card._card)._spell)
                 {
-                    case SpellCard.SpellType.HEAL_ALLY_FIELD_CARDS:
+                    case SpellType.HEAL_ALLY_FIELD_CARDS:
 
                         if (GameManager.instance._enemyFieldCards.Count > 0)
                             StartCoroutine(CastCard(card));
 
                         break;
 
-                    case SpellCard.SpellType.DAMAGE_ENEMY_FIELD_CARDS:
+                    case SpellType.DAMAGE_ENEMY_FIELD_CARDS:
 
                         if (GameManager.instance._playerFieldCards.Count > 0)
                             StartCoroutine(CastCard(card));
 
                         break;
 
-                    case SpellCard.SpellType.HEAL_ALLY_HERO:
+                    case SpellType.HEAL_ALLY_HERO:
                         StartCoroutine(CastCard(card));
                         break;
 
-                    case SpellCard.SpellType.DAMAGE_ENEMY_HERO:
+                    case SpellType.DAMAGE_ENEMY_HERO:
                         StartCoroutine(CastCard(card));
                         break;
                 }
                 break;
 
-            case SpellCard.TargetType.ALLY_CARD_TARGET:
+            case TargetType.ALLY_CARD_TARGET:
 
                 if (GameManager.instance._enemyFieldCards.Count > 0)
                     StartCoroutine(CastCard(card,
@@ -121,7 +122,7 @@ public class AI : MonoBehaviour
 
                 break;
 
-            case SpellCard.TargetType.ENEMY_CARD_TARGET:
+            case TargetType.ENEMY_CARD_TARGET:
 
                 if (GameManager.instance._playerFieldCards.Count > 0)
                     StartCoroutine(CastCard(card,
@@ -133,7 +134,7 @@ public class AI : MonoBehaviour
 
     private IEnumerator CastCard(CardController spell, CardController target = null)
     {
-        if(((SpellCard)spell._card)._spellTarget == SpellCard.TargetType.NO_TARGET)
+        if(((SpellCard)spell._card)._spellTarget == TargetType.NO_TARGET)
         {
             spell.GetComponent<CardMovement>().MoveToField(GameManager.instance._enemyField);
             yield return new WaitForSeconds(0.51f);

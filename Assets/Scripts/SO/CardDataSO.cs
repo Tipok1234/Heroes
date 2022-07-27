@@ -1,5 +1,4 @@
 //using UnityEngine;
-//using Assets.Scripts.Enums;
 
 //namespace Assets.Scripts.SO
 //{

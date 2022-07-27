@@ -1,4 +1,4 @@
-using Assets.Scripts.Models;
+using Assets.Scripts.Enums;
 using UnityEngine;
 using Assets.Scripts.Controllers;
 using Assets.Scripts.Managers;
@@ -17,18 +17,18 @@ namespace Assets.Scripts.Models
             {
                 switch (ability)
                 {
-                    case Card.AbilityType.INSTANT_ACTIVE:
+                    case AbilityType.INSTANT_ACTIVE:
                         _cardController._card.CanAttack = true;
 
                         if (_cardController._isPlayerCard)
                             _cardController._cardInfo.HightLightCard(true);
                         break;
 
-                    case Card.AbilityType.SHIELD:
+                    case AbilityType.SHIELD:
                         _shield.SetActive(true);
                         break;
 
-                    case Card.AbilityType.PROVOCATION:
+                    case AbilityType.PROVOCATION:
                         _provocation.SetActive(true);
                         break;
                 }
@@ -41,7 +41,7 @@ namespace Assets.Scripts.Models
             {
                 switch (ability)
                 {
-                    case Card.AbilityType.DOUBLE_ATTACK:
+                    case AbilityType.DOUBLE_ATTACK:
 
                         if (_cardController._card.timeDealDamage == 1)
                         {
@@ -63,11 +63,11 @@ namespace Assets.Scripts.Models
             {
                 switch (ability)
                 {
-                    case Card.AbilityType.SHIELD:
+                    case AbilityType.SHIELD:
                         _shield.SetActive(true);
                         break;
 
-                    case Card.AbilityType.COUNTER_ATTACK:
+                    case AbilityType.COUNTER_ATTACK:
                         if (attacker != null)
                             attacker._card.GetDamage(_cardController._card.Attack);
                         break;
@@ -84,7 +84,7 @@ namespace Assets.Scripts.Models
             {
                 switch (ability)
                 {
-                    case Card.AbilityType.REGENIRATION_EACH_TURN:
+                    case AbilityType.REGENIRATION_EACH_TURN:
                         _cardController._card.Defence += 2;
                         _cardController._cardInfo.RefreshData();
                         break;

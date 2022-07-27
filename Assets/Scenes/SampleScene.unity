@@ -3445,7 +3445,6 @@ MonoBehaviour:
   _playerHand: {fileID: 325138236}
   _playerField: {fileID: 314556753}
   _cardPref: {fileID: 2443604951445646135, guid: 27dc0f4c934e1584ca9558313463b951, type: 3}
-  _enemyDragDeck: {fileID: 1510695950}
   _enemyHero: {fileID: 652528635}
   _playerHero: {fileID: 1183479513}
   _enemyAI: {fileID: 652528636}

@@ -4,14 +4,9 @@ using Assets.Scripts.Models;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
-
+using Assets.Scripts.Enums;
 public class AttackHero : MonoBehaviour, IDropHandler
 {
-    public enum HeroType
-    {
-        ENEMY,
-        PLAYER
-    }
 
     public HeroType _type;
     public Color _normalHeroColor;

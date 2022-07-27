@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using DG.Tweening;
 using Assets.Scripts.Managers;
-using Assets.Scripts.Models;
+using Assets.Scripts.Enums;
 using System.Collections;
 using UnityEngine.UI;
 using Assets.Scripts.Controllers;
@@ -42,7 +42,7 @@ public class CardMovement : MonoBehaviour, IBeginDragHandler, IDragHandler, IEnd
 
         _startID = transform.GetSiblingIndex();
 
-        if(_cardController._card.IsSpell || _cardController._card.CanAttack)
+        if(_cardController._card.isSpell || _cardController._card.CanAttack)
             GameManager.instance.HightLightTargets(_cardController,true);
 
         _tempCardGo.transform.SetParent(_defaultParent);
@@ -60,7 +60,7 @@ public class CardMovement : MonoBehaviour, IBeginDragHandler, IDragHandler, IEnd
         Vector3 newPos = _mainCamera.ScreenToWorldPoint(eventData.position);
         transform.position = newPos + _offset;
 
-        if(!_cardController._card.IsSpell)
+        if(!_cardController._card.isSpell)
         {
             if (_tempCardGo.transform.parent != _defaultTempCardParant)
                 _tempCardGo.transform.SetParent(_defaultTempCardParant);

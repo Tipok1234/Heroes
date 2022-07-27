@@ -3,14 +3,9 @@ using UnityEngine.EventSystems;
 using Assets.Scripts.Models;
 using Assets.Scripts.Managers;
 using Assets.Scripts.Controllers;
+using Assets.Scripts.Enums;
 
-public enum FieldType
-{
-    SELF_HAND,
-    SELF_FIELD,
-    ENEMY_HAND,
-    ENEMY_FIELD
-}
+
 public class DropPlaceScript : MonoBehaviour, IDropHandler, IPointerEnterHandler, IPointerExitHandler
 {
     public FieldType type;
@@ -25,7 +20,7 @@ public class DropPlaceScript : MonoBehaviour, IDropHandler, IPointerEnterHandler
             GameManager.instance._currentGame._player._mana >= card._card.Manacost &&
             !card._card.IsPlaced)
         {
-            if(!card._card.IsSpell)
+            if(!card._card.isSpell)
             card._cardMovement._defaultParent = transform;
 
 

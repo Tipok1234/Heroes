@@ -2,6 +2,7 @@ using UnityEngine;
 using Assets.Scripts.Models;
 using Assets.Scripts.Managers;
 using System.Collections.Generic;
+using Assets.Scripts.Enums;
 
 namespace Assets.Scripts.Controllers
 {
@@ -36,7 +37,7 @@ namespace Assets.Scripts.Controllers
         public void OnCast()
         {
             
-            if (_card.IsSpell && ((SpellCard)_card)._spellTarget != SpellCard.TargetType.NO_TARGET)
+            if (_card.isSpell && ((SpellCard)_card)._spellTarget != TargetType.NO_TARGET)
                 return;
 
             if(_isPlayerCard)
@@ -59,7 +60,7 @@ namespace Assets.Scripts.Controllers
             if (_card.HasAbility)
                 _cardAbilities.OnCast();
 
-            if (_card.IsSpell)
+            if (_card.isSpell)
                 UseSpell(null);
 
             UIController.instance.UpdateHPAndMana();
@@ -87,7 +88,7 @@ namespace Assets.Scripts.Controllers
 
             switch(spellCard._spell)
             {
-                case SpellCard.SpellType.HEAL_ALLY_FIELD_CARDS:
+                case SpellType.HEAL_ALLY_FIELD_CARDS:
 
                     var allyCards = _isPlayerCard ?
                                     _gameManager._playerFieldCards :
@@ -100,7 +101,7 @@ namespace Assets.Scripts.Controllers
                     }
                     break;
 
-                case SpellCard.SpellType.DAMAGE_ENEMY_FIELD_CARDS:
+                case SpellType.DAMAGE_ENEMY_FIELD_CARDS:
 
                     var enemyCard = _isPlayerCard ?
                                     new List<CardController>(_gameManager._enemyFieldCards) :
@@ -111,7 +112,7 @@ namespace Assets.Scripts.Controllers
 
                     break;
 
-                case SpellCard.SpellType.HEAL_ALLY_HERO:
+                case SpellType.HEAL_ALLY_HERO:
 
                     if (_isPlayerCard)
                         _gameManager._currentGame._player._hp += spellCard._spellValue;
@@ -122,7 +123,7 @@ namespace Assets.Scripts.Controllers
 
                     break;
 
-                case SpellCard.SpellType.DAMAGE_ENEMY_HERO:
+                case SpellType.DAMAGE_ENEMY_HERO:
 
                     if (_isPlayerCard)
                         _gameManager._currentGame._enemy._hp -= spellCard._spellValue;
@@ -134,34 +135,34 @@ namespace Assets.Scripts.Controllers
 
                     break;
 
-                case SpellCard.SpellType.HEAL_ALLY_CARD:
+                case SpellType.HEAL_ALLY_CARD:
 
                     target._card.Defence += spellCard._spellValue;
                     break;
 
-                case SpellCard.SpellType.DAMAGE_ENEMY_CARD:
+                case SpellType.DAMAGE_ENEMY_CARD:
                     GiveDamageTo(target, spellCard._spellValue);
                     break;
 
-                case SpellCard.SpellType.SHIELD_ON_ALLY_CARD:
+                case SpellType.SHIELD_ON_ALLY_CARD:
 
-                    if (!target._card._abilities.Exists(x => x == Card.AbilityType.SHIELD))
-                        target._card._abilities.Add(Card.AbilityType.SHIELD);
-
-                    break;
-
-                case SpellCard.SpellType.PROVOCATION_ON_ALLY_CARD:
-
-                    if (!target._card._abilities.Exists(x => x == Card.AbilityType.PROVOCATION))
-                        target._card._abilities.Add(Card.AbilityType.PROVOCATION);
+                    if (!target._card._abilities.Exists(x => x == AbilityType.SHIELD))
+                        target._card._abilities.Add(AbilityType.SHIELD);
 
                     break;
 
-                case SpellCard.SpellType.BUFF_CARD_DAMAGE:
+                case SpellType.PROVOCATION_ON_ALLY_CARD:
+
+                    if (!target._card._abilities.Exists(x => x == AbilityType.PROVOCATION))
+                        target._card._abilities.Add(AbilityType.PROVOCATION);
+
+                    break;
+
+                case SpellType.BUFF_CARD_DAMAGE:
                     target._card.Attack += spellCard._spellValue;
                     break;
 
-                case SpellCard.SpellType.DEBUFF_CARD_DAMAGE:
+                case SpellType.DEBUFF_CARD_DAMAGE:
                     target._card.Attack = Mathf.Clamp(target._card.Attack - spellCard._spellValue,0,int.MaxValue);
                     break;
             }

@@ -38,7 +38,7 @@ namespace Assets.Scripts.Models
             logo.preserveAspect = true;
             name.text = _cardController._card.Name;
 
-            if(_cardController._card.IsSpell)
+            if(_cardController._card.isSpell)
             {
                 attack.gameObject.SetActive(false);
                 defence.gameObject.SetActive(false);
