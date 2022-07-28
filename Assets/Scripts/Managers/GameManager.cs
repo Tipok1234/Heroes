@@ -62,6 +62,7 @@ namespace Assets.Scripts.Managers
             _enemyFieldCards.Clear();
 
             StartGame();
+            
 
         }
 
@@ -85,6 +86,7 @@ namespace Assets.Scripts.Managers
             {
                 GiveCardToHand(deck, hand);
                 yield return new WaitForSeconds(0.25f);
+                CheckCardsForManaAvailability();
             }
         }
 
@@ -94,6 +96,7 @@ namespace Assets.Scripts.Managers
                 return;
 
             CreateCardPref(deck[0], hand);
+            AudioManager._instanceAudio.DistributionCard();
 
             deck.RemoveAt(0);
 
@@ -207,6 +210,7 @@ namespace Assets.Scripts.Managers
 
             defender._card.GetDamage(attacker._card.Attack);
             attacker.OnDamageDeal();
+            AudioManager._instanceAudio.VoiceAttack();
             defender.OnTakeDamage(attacker);
 
             attacker._card.GetDamage(defender._card.Attack);
@@ -277,8 +281,8 @@ namespace Assets.Scripts.Managers
                 {
                     targets = _enemyFieldCards;
 
-                   // if(!attacker._card.IsSpell)
-                    _enemyHero.HightLightTarget(hightLight);
+                    //if(!attacker._card.IsSpell)
+                    //_enemyHero.HightLightTarget(hightLight);
                 }
             }              
             foreach (var card in targets)

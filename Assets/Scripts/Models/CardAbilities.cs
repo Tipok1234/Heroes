@@ -1,7 +1,6 @@
 using Assets.Scripts.Enums;
 using UnityEngine;
 using Assets.Scripts.Controllers;
-using Assets.Scripts.Managers;
 
 namespace Assets.Scripts.Models
 {
@@ -42,6 +41,8 @@ namespace Assets.Scripts.Models
                 switch (ability)
                 {
                     case AbilityType.DOUBLE_ATTACK:
+
+                        Debug.LogError("DA :   "  +  _cardController._card.timeDealDamage);
 
                         if (_cardController._card.timeDealDamage == 1)
                         {

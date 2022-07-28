@@ -21,6 +21,7 @@ public class AttackHero : MonoBehaviour, IDropHandler
             !GameManager.instance._enemyFieldCards.Exists(x => x._card.IsProvocation))
         {
             GameManager.instance.DamageHero(card, true);
+            AudioManager._instanceAudio.VoiceAttack();
         }
     }
 

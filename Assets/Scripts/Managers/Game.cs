@@ -39,7 +39,6 @@ public class Game : MonoBehaviour
                 {
                     list.Add(card.GetCopy());
                 }
-
             }
             return list;
         }

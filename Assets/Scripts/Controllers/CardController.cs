@@ -88,7 +88,7 @@ namespace Assets.Scripts.Controllers
             var spellCard = (SpellCard)_card;
             var effectHealPos = new Vector3(-6, 0, 0);
 
-            switch(spellCard._spell)
+            switch (spellCard._spell)
             {
                 case SpellType.HEAL_ALLY_FIELD_CARDS:
 
@@ -98,6 +98,7 @@ namespace Assets.Scripts.Controllers
 
                     foreach (var card in allyCards)
                     {
+                        AudioManager._instanceAudio.HealAudio();
                         card._card.Defence += spellCard._spellValue;
                         card._cardInfo.RefreshData();
                     }
@@ -113,7 +114,10 @@ namespace Assets.Scripts.Controllers
                                     new List<CardController>(_gameManager._playerFieldCards);
 
                     foreach (var card in enemyCard)
+                    {
+                        AudioManager._instanceAudio.VoiceAttack();
                         GiveDamageTo(card, spellCard._spellValue);
+                    }
 
                     break;
 
@@ -128,6 +132,7 @@ namespace Assets.Scripts.Controllers
                         _gameManager._currentGame._enemy._hp += spellCard._spellValue;
                     }
 
+                    AudioManager._instanceAudio.HealAudio();
                     Instantiate(_gameManager._effectHeal, effectHealPos, Quaternion.identity);
                     UIController.instance.UpdateHPAndMana();
 
@@ -136,46 +141,76 @@ namespace Assets.Scripts.Controllers
                 case SpellType.DAMAGE_ENEMY_HERO:
 
                     if (_isPlayerCard)
+                    {
                         _gameManager._currentGame._enemy._hp -= spellCard._spellValue;
+                    }                      
                     else
+                    {
                         _gameManager._currentGame._player._hp -= spellCard._spellValue;
+                    }
 
+                    AudioManager._instanceAudio.VoiceAttack();
                     UIController.instance.UpdateHPAndMana();
                     _gameManager.CheckForResult();
 
                     break;
 
                 case SpellType.HEAL_ALLY_CARD:
-                   
+
+                    {
+                        AudioManager._instanceAudio.HealAudio();
                         target._card.Defence += spellCard._spellValue;
-                    Instantiate(_gameManager._effectHeal, effectHealPos, Quaternion.identity);
+                        Instantiate(_gameManager._effectHeal, effectHealPos, Quaternion.identity);
+                    }
+
 
                     break;
 
                 case SpellType.DAMAGE_ENEMY_CARD:
-                    GiveDamageTo(target, spellCard._spellValue);
+
+                    {
+                        AudioManager._instanceAudio.VoiceAttack();
+                        GiveDamageTo(target, spellCard._spellValue);
+                    }
+
                     break;
 
                 case SpellType.SHIELD_ON_ALLY_CARD:
 
                     if (!target._card._abilities.Exists(x => x == AbilityType.SHIELD))
+                    {
+                        AudioManager._instanceAudio.BuffAudio();
                         target._card._abilities.Add(AbilityType.SHIELD);
-
+                    }
+                        
                     break;
 
                 case SpellType.PROVOCATION_ON_ALLY_CARD:
 
                     if (!target._card._abilities.Exists(x => x == AbilityType.PROVOCATION))
+                    {
+                        AudioManager._instanceAudio.BuffAudio();
                         target._card._abilities.Add(AbilityType.PROVOCATION);
-
+                    }
+                       
                     break;
 
                 case SpellType.BUFF_CARD_DAMAGE:
-                    target._card.Attack += spellCard._spellValue;
+
+                    {
+                        AudioManager._instanceAudio.BuffAudio();
+                        target._card.Attack += spellCard._spellValue;
+                    }
+                    
                     break;
 
                 case SpellType.DEBUFF_CARD_DAMAGE:
-                    target._card.Attack = Mathf.Clamp(target._card.Attack - spellCard._spellValue,0,int.MaxValue);
+
+                    {
+                        AudioManager._instanceAudio.BuffAudio();
+                        target._card.Attack = Mathf.Clamp(target._card.Attack - spellCard._spellValue, 0, int.MaxValue);
+                    }
+                 
                     break;
             }
 

@@ -1,8 +1,6 @@
 using UnityEngine.UI;
 using TMPro;
 using UnityEngine;
-using System.Collections.Generic;
-using Assets.Scripts.Managers;
 using Assets.Scripts.Controllers;
 
 namespace Assets.Scripts.Models
