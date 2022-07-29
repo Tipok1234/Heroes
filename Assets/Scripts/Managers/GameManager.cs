@@ -38,10 +38,11 @@ namespace Assets.Scripts.Managers
             if (instance == null)
                 instance = this;
         }
-        private void Start()
-        {
-            StartGame();
-        }
+
+        //private void Start()
+        //{
+        //    StartGame();
+        //}
 
         public void RestartGame()
         {
@@ -66,7 +67,7 @@ namespace Assets.Scripts.Managers
 
         }
 
-        private void StartGame()
+        public void StartGame()
         {
             _turn = 0;
 

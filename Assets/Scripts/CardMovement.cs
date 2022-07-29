@@ -81,7 +81,7 @@ public class CardMovement : MonoBehaviour, IBeginDragHandler, IDragHandler, IEnd
         GetComponent<CanvasGroup>().blocksRaycasts = true;
 
         transform.SetSiblingIndex(_tempCardGo.transform.GetSiblingIndex());
-        _tempCardGo.transform.SetParent(GameObject.Find("Canvas").transform);
+        _tempCardGo.transform.SetParent(GameObject.Find("GameCanvas").transform);
         _tempCardGo.transform.localPosition = new Vector3(1200, 0);
     }
 
@@ -110,7 +110,7 @@ public class CardMovement : MonoBehaviour, IBeginDragHandler, IDragHandler, IEnd
 
     public void MoveToField(Transform field)
     {
-       transform.SetParent(GameObject.Find("Canvas").transform);
+       transform.SetParent(GameObject.Find("GameCanvas").transform);
         transform.DOMove(field.position, 0.5f);
     }
 
@@ -122,7 +122,7 @@ public class CardMovement : MonoBehaviour, IBeginDragHandler, IDragHandler, IEnd
 
     public void MoveToHand(Transform field)
     {
-        transform.SetParent(GameObject.Find("Canvas").transform);
+        transform.SetParent(GameObject.Find("GameCanvas").transform);
         transform.DOMove(field.position, 0.7f).OnComplete(() => transform.SetParent(field)); 
     }
 
@@ -135,7 +135,7 @@ public class CardMovement : MonoBehaviour, IBeginDragHandler, IDragHandler, IEnd
         if(transform.parent.GetComponent<HorizontalLayoutGroup>())
              transform.parent.GetComponent<HorizontalLayoutGroup>().enabled = false;
 
-        transform.SetParent(GameObject.Find("Canvas").transform);
+        transform.SetParent(GameObject.Find("GameCanvas").transform);
 
         transform.DOMove(target.position, 0.25f);
 

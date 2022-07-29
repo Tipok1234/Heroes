@@ -16,7 +16,7 @@ public class AI : MonoBehaviour
     {
         yield return new WaitForSeconds(1);
 
-        int count = cards.Count == 1 ? 1 : Random.Range(0, cards.Count + 1);
+        int count = cards.Count == 1 ? 1 : Random.Range(0, cards.Count);
 
         for (int i = 0; i < count; i++)
         {
@@ -66,7 +66,7 @@ public class AI : MonoBehaviour
                 activeCard._cardMovement.MoveToTarget(enemy.transform);
                 yield return new WaitForSeconds(0.75f);
 
-                GameManager.instance.CardsFight(enemy, activeCard);
+                GameManager.instance.CardsFight(activeCard, enemy);
             }
             else
             {

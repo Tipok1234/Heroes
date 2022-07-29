@@ -80,4 +80,5 @@ public class UIController : MonoBehaviour
         _endTurnButton.interactable = GameManager.instance.IsPlayerTurn;
     }
 
+
 }
