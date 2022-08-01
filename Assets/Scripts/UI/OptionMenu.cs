@@ -6,8 +6,8 @@ namespace Assets.Scripts.UI
 {
     public class OptionMenu : MonoBehaviour
     {
-        public AudioMixer audioMixer;
-        public Canvas _canvasOptionMenu;
+        [SerializeField] private AudioMixer audioMixer;
+        [SerializeField] private Canvas _canvasOptionMenu;
         [SerializeField] private Button _openOptionButton;
         [SerializeField] private Button _backOptionButton;
 
@@ -27,13 +27,7 @@ namespace Assets.Scripts.UI
         }
         private void OpenOptionMenu()
         {
-            _canvasOptionMenu.enabled = !_canvasOptionMenu.enabled;
-
-
-            //if (_canvasOptionMenu.enabled == true)
-            //    _canvasOptionMenu.enabled = false;
-            //else
-            //    _canvasOptionMenu.enabled = true;
+            _canvasOptionMenu.enabled = !_canvasOptionMenu.enabled;  
         }
     }
 }

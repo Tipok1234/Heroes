@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using Assets.Scripts.Enums;
 using Assets.Scripts.Controllers;
+using Assets.Scripts.UI;
+using Assets.Scripts.Models;
+using Assets.Scripts.Audio;
 
 namespace Assets.Scripts.Managers
 {

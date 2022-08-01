@@ -3,6 +3,8 @@ using Assets.Scripts.Models;
 using Assets.Scripts.Managers;
 using System.Collections.Generic;
 using Assets.Scripts.Enums;
+using Assets.Scripts.UI;
+using Assets.Scripts.Audio;
 
 namespace Assets.Scripts.Controllers
 {
