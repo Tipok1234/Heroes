@@ -2595,6 +2595,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _normalHeroColor: {r: 0, g: 0, b: 0, a: 0}
   _targetHeroColor: {r: 0.8396226, g: 0, b: 0, a: 1}
+  _imageTarget: {fileID: 652528633}
 --- !u!114 &652528636
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4187,6 +4188,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _normalHeroColor: {r: 0, g: 0, b: 0, a: 0}
   _targetHeroColor: {r: 0.8392157, g: 0, b: 0, a: 0}
+  _imageTarget: {fileID: 1183479511}
 --- !u!1 &1192637171
 GameObject:
   m_ObjectHideFlags: 0
@@ -4226,6 +4228,8 @@ MonoBehaviour:
   _resultText: {fileID: 464158384}
   _turnTime: {fileID: 1855118634}
   _endTurnButton: {fileID: 448474263}
+  _tempCardGo: {fileID: 696964815}
+  _gameCanvas: {fileID: 174621133}
 --- !u!4 &1192637173
 Transform:
   m_ObjectHideFlags: 0
@@ -6192,10 +6196,6 @@ MonoBehaviour:
   _enemyHero: {fileID: 652528635}
   _playerHero: {fileID: 1183479513}
   _enemyAI: {fileID: 652528636}
-  _playerHandCards: []
-  _playerFieldCards: []
-  _enemyHandCards: []
-  _enemyFieldCards: []
 --- !u!1 &1945979375
 GameObject:
   m_ObjectHideFlags: 0

@@ -4,7 +4,6 @@ using Assets.Scripts.Managers;
 using System.Collections.Generic;
 using Assets.Scripts.Enums;
 using Assets.Scripts.UI;
-using Assets.Scripts.Audio;
 
 namespace Assets.Scripts.Controllers
 {
@@ -13,15 +12,16 @@ namespace Assets.Scripts.Controllers
         public CardInfo CardInfo => _cardInfo;
         public CardMovement CardMovement => _cardMovement;
         public CardAbilities CardAbilities => _cardAbilities;
+        public Card Card => _card;
         public bool IsPlayerCard => _isPlayerCard;
 
-        public Card _card;
         private bool _isPlayerCard;
 
+        [SerializeField] private AttackCard attackCard;
+        [SerializeField] private Card _card;
         [SerializeField] private CardInfo _cardInfo;
         [SerializeField] private CardMovement _cardMovement;
         [SerializeField] private CardAbilities _cardAbilities;
-       // [SerializeField] private GameObject _effectHeal;
 
         private GameManager _gameManager;
 
@@ -34,7 +34,7 @@ namespace Assets.Scripts.Controllers
             if(isPlayerCard)
             {
                 _cardInfo.ShowCardInfo();
-                GetComponent<AttackCard>().enabled = false;
+                attackCard.enabled = false;
             }
             else
             {
@@ -45,20 +45,20 @@ namespace Assets.Scripts.Controllers
         public void OnCast()
         {
             
-            if (_card.isSpell && ((SpellCard)_card).SpellTarget != TargetType.NO_TARGET)
+            if (_card.IsSpell && ((SpellCard)_card).SpellTarget != TargetType.NO_TARGET)
                 return;
 
             if(_isPlayerCard)
             {
-                _gameManager._playerHandCards.Remove(this);
-                _gameManager._playerFieldCards.Add(this);
+                _gameManager.PlayerHandCards.Remove(this);
+                _gameManager.PlayerFieldCards.Add(this);
                 _gameManager.ReduceMana(true, _card.Manacost);
                 _gameManager.CheckCardsForManaAvailability();
             }
             else
             {
-                _gameManager._enemyHandCards.Remove(this);
-                _gameManager._enemyFieldCards.Add(this);
+                _gameManager.EnemyHandCards.Remove(this);
+                _gameManager.EnemyFieldCards.Add(this);
                 _gameManager.ReduceMana(false, _card.Manacost);
                 _cardInfo.ShowCardInfo();
                 _cardInfo.HideMana(false);
@@ -68,7 +68,7 @@ namespace Assets.Scripts.Controllers
             if (_card.HasAbility)
                 _cardAbilities.OnCast();
 
-            if (_card.isSpell)
+            if (_card.IsSpell)
                 UseSpell(null);
 
             UIController.instance.UpdateHPAndMana();
@@ -93,36 +93,35 @@ namespace Assets.Scripts.Controllers
         public void UseSpell(CardController target)
         {
             var spellCard = (SpellCard)_card;
-            var effectHealPos = new Vector3(-6, 0, 0);
 
             switch (spellCard.Spell)
             {
                 case SpellType.HEAL_ALLY_FIELD_CARDS:
 
                     var allyCards = _isPlayerCard ?
-                                    _gameManager._playerFieldCards :
-                                    _gameManager._enemyFieldCards;
+                                    _gameManager.PlayerFieldCards :
+                                    _gameManager.EnemyFieldCards;
 
                     foreach (var card in allyCards)
                     {
-                        AudioManager._instanceAudio.HealAudio();
+                        AudioManager.Instance.HealAudio();
                         card._card.Defence += spellCard.SpellValue;
                         card._cardInfo.RefreshData();
                     }
 
-                    Instantiate(_gameManager._effectHeal, effectHealPos, Quaternion.identity);
+                    _gameManager.InstantiateEffectHeal();
 
                     break;
 
                 case SpellType.DAMAGE_ENEMY_FIELD_CARDS:
 
                     var enemyCard = _isPlayerCard ?
-                                    new List<CardController>(_gameManager._enemyFieldCards) :
-                                    new List<CardController>(_gameManager._playerFieldCards);
+                                    new List<CardController>(_gameManager.EnemyFieldCards) :
+                                    new List<CardController>(_gameManager.PlayerFieldCards);
 
                     foreach (var card in enemyCard)
                     {
-                        AudioManager._instanceAudio.VoiceAttack();
+                        AudioManager.Instance.VoiceAttack();
                         GiveDamageTo(card, spellCard.SpellValue);
                     }
 
@@ -132,15 +131,15 @@ namespace Assets.Scripts.Controllers
 
                     if (_isPlayerCard)
                     {
-                        _gameManager._currentGame._player._hp += spellCard.SpellValue;
+                        _gameManager.CurrentGame.Player.AddHPValue(spellCard.SpellValue);
                     }  
                     else
                     {
-                        _gameManager._currentGame._enemy._hp += spellCard.SpellValue;
+                        _gameManager.CurrentGame.Enemy.AddHPValue(spellCard.SpellValue);
                     }
 
-                    AudioManager._instanceAudio.HealAudio();
-                    Instantiate(_gameManager._effectHeal, effectHealPos, Quaternion.identity);
+                    AudioManager.Instance.HealAudio();
+                    _gameManager.InstantiateEffectHeal();
                     UIController.instance.UpdateHPAndMana();
 
                     break;
@@ -149,14 +148,14 @@ namespace Assets.Scripts.Controllers
 
                     if (_isPlayerCard)
                     {
-                        _gameManager._currentGame._enemy._hp -= spellCard.SpellValue;
+                        _gameManager.CurrentGame.Enemy.AddHPValue(-spellCard.SpellValue);
                     }                      
                     else
                     {
-                        _gameManager._currentGame._player._hp -= spellCard.SpellValue;
+                        _gameManager.CurrentGame.Player.AddHPValue(-spellCard.SpellValue);
                     }
 
-                    AudioManager._instanceAudio.VoiceAttack();
+                    AudioManager.Instance.VoiceAttack();
                     UIController.instance.UpdateHPAndMana();
                     _gameManager.CheckForResult();
 
@@ -165,9 +164,9 @@ namespace Assets.Scripts.Controllers
                 case SpellType.HEAL_ALLY_CARD:
 
                     {
-                        AudioManager._instanceAudio.HealAudio();
+                        AudioManager.Instance.HealAudio();
                         target._card.Defence += spellCard.SpellValue;
-                        Instantiate(_gameManager._effectHeal, effectHealPos, Quaternion.identity);
+                        _gameManager.InstantiateEffectHeal();
                     }
 
 
@@ -176,7 +175,7 @@ namespace Assets.Scripts.Controllers
                 case SpellType.DAMAGE_ENEMY_CARD:
 
                     {
-                        AudioManager._instanceAudio.VoiceAttack();
+                        AudioManager.Instance.VoiceAttack();
                         GiveDamageTo(target, spellCard.SpellValue);
                     }
 
@@ -184,20 +183,20 @@ namespace Assets.Scripts.Controllers
 
                 case SpellType.SHIELD_ON_ALLY_CARD:
 
-                    if (!target._card._abilities.Exists(x => x == AbilityType.SHIELD))
+                    if (!target._card.Abilities.Exists(x => x == AbilityType.SHIELD))
                     {
-                        AudioManager._instanceAudio.BuffAudio();
-                        target._card._abilities.Add(AbilityType.SHIELD);
+                        AudioManager.Instance.BuffAudio();
+                        target._card.Abilities.Add(AbilityType.SHIELD);
                     }
                         
                     break;
 
                 case SpellType.PROVOCATION_ON_ALLY_CARD:
 
-                    if (!target._card._abilities.Exists(x => x == AbilityType.PROVOCATION))
+                    if (!target._card.Abilities.Exists(x => x == AbilityType.PROVOCATION))
                     {
-                        AudioManager._instanceAudio.BuffAudio();
-                        target._card._abilities.Add(AbilityType.PROVOCATION);
+                        AudioManager.Instance.BuffAudio();
+                        target._card.Abilities.Add(AbilityType.PROVOCATION);
                     }
                        
                     break;
@@ -205,7 +204,7 @@ namespace Assets.Scripts.Controllers
                 case SpellType.BUFF_CARD_DAMAGE:
 
                     {
-                        AudioManager._instanceAudio.BuffAudio();
+                        AudioManager.Instance.BuffAudio();
                         target._card.Attack += spellCard.SpellValue;
                     }
                     
@@ -214,7 +213,7 @@ namespace Assets.Scripts.Controllers
                 case SpellType.DEBUFF_CARD_DAMAGE:
 
                     {
-                        AudioManager._instanceAudio.BuffAudio();
+                        AudioManager.Instance.BuffAudio();
                         target._card.Attack = Mathf.Clamp(target._card.Attack - spellCard.SpellValue, 0, int.MaxValue);
                     }
                  
@@ -239,14 +238,12 @@ namespace Assets.Scripts.Controllers
 
         public void CheckForALive()
         {
-            var effectDeathPos = new Vector3(-6, 0, 0);
-
             if (_card.isALive)
                 _cardInfo.RefreshData();
             else               
             {
                 DestroyCard();
-                Instantiate(_gameManager._effectDeath, effectDeathPos, Quaternion.identity);
+                _gameManager.InstantiateEffectDeath();
             }
         }
 
@@ -255,10 +252,10 @@ namespace Assets.Scripts.Controllers
             
             _cardMovement.OnEndDrag(null);
 
-            RemoveCardFromList(_gameManager._enemyFieldCards);
-            RemoveCardFromList(_gameManager._enemyHandCards);
-            RemoveCardFromList(_gameManager._playerFieldCards);
-            RemoveCardFromList(_gameManager._playerHandCards);
+            RemoveCardFromList(_gameManager.EnemyFieldCards);
+            RemoveCardFromList(_gameManager.EnemyHandCards);
+            RemoveCardFromList(_gameManager.PlayerFieldCards);
+            RemoveCardFromList(_gameManager.PlayerHandCards);
 
             gameObject.SetActive(false);
         }

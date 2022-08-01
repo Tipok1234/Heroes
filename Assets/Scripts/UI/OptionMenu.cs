@@ -5,7 +5,7 @@ using UnityEngine.UI;
 namespace Assets.Scripts.UI
 {
     public class OptionMenu : MonoBehaviour
-    {
+    {       
         [SerializeField] private AudioMixer audioMixer;
         [SerializeField] private Canvas _canvasOptionMenu;
         [SerializeField] private Button _openOptionButton;

@@ -5,33 +5,47 @@ using Assets.Scripts.Enums;
 using Assets.Scripts.Controllers;
 using Assets.Scripts.UI;
 using Assets.Scripts.Models;
-using Assets.Scripts.Audio;
 
 namespace Assets.Scripts.Managers
 {
     public class GameManager : MonoBehaviour
     {
+        public Transform EnemyField => _enemyField;
+        public AttackHero PlayerHero => _playerHero;
+        public Game CurrentGame => _currentGame;
+        public GameObject EffectHeal => _effectHeal;
+        public GameObject EffectDeath => _effectDeath;
+
+        public List<CardController> PlayerHandCards => _playerHandCards;
+        public List<CardController> PlayerFieldCards => _playerFieldCards;
+        public List<CardController> EnemyHandCards => _enemyHandCards;
+        public List<CardController> EnemyFieldCards => _enemyFieldCards;
+
         public bool IsPlayerTurn { get { return _turn % 2 == 0; } }
         public static GameManager instance;
-        public Game _currentGame;
-        public Transform _enemyHand;
-        public Transform _enemyField;
-        public Transform _playerHand;
-        public Transform _playerField;
 
-        public GameObject _cardPref;
-        public GameObject _effectDamage;
-        public GameObject _effectHeal;
-        public GameObject _effectDeath;
+        [SerializeField] private Game _currentGame;
+        [SerializeField] private Transform _enemyHand;
+        [SerializeField] private Transform _enemyField;
+        [SerializeField] private Transform _playerHand;
+        [SerializeField] private Transform _playerField;
+
+        [SerializeField] private GameObject _cardPref;
+        [SerializeField] private GameObject _effectDamage;
+        [SerializeField] private GameObject _effectHeal;
+        [SerializeField] private GameObject _effectDeath;
 
         private int _turn;
         private int _turnTime = 30;
+        private int _countCard = 4;
+        private Vector3 effectPos = new Vector3(-6, 0, 0);
+        
 
-        public AttackHero _enemyHero;
-        public AttackHero _playerHero;
-        public AI _enemyAI;
+        [SerializeField] private AttackHero _enemyHero;
+        [SerializeField] private AttackHero _playerHero;
+        [SerializeField] private AIManager _enemyAI;
 
-        public List<CardController> _playerHandCards = new List<CardController>(),
+        private List<CardController> _playerHandCards = new List<CardController>(),
                                     _playerFieldCards = new List<CardController>(),
                                     _enemyHandCards = new List<CardController>(),
                                     _enemyFieldCards = new List<CardController>();
@@ -41,11 +55,6 @@ namespace Assets.Scripts.Managers
             if (instance == null)
                 instance = this;
         }
-
-        //private void Start()
-        //{
-        //    StartGame();
-        //}
 
         public void RestartGame()
         {
@@ -66,8 +75,6 @@ namespace Assets.Scripts.Managers
             _enemyFieldCards.Clear();
 
             StartGame();
-            
-
         }
 
         public void StartGame()
@@ -75,8 +82,8 @@ namespace Assets.Scripts.Managers
             _turn = 0;
 
             _currentGame.InitGame();
-            StartCoroutine(GiveHandCards(_currentGame._enemyDeck, _enemyHand));
-            StartCoroutine(GiveHandCards(_currentGame._playerDeck, _playerHand));           
+            StartCoroutine(GiveHandCards(_currentGame.EnemyDeck, _enemyHand));
+            StartCoroutine(GiveHandCards(_currentGame.PlayerDeck, _playerHand));           
 
             UIController.instance.StartGame();
     
@@ -86,7 +93,7 @@ namespace Assets.Scripts.Managers
         private IEnumerator GiveHandCards(List<Card> deck, Transform hand)
         { 
             int i = 0;
-            while (i++ < 4)
+            while (i++ < _countCard)
             {
                 GiveCardToHand(deck, hand);
                 yield return new WaitForSeconds(0.25f);
@@ -100,12 +107,12 @@ namespace Assets.Scripts.Managers
                 return;
 
             CreateCardPref(deck[0], hand);
-            AudioManager._instanceAudio.DistributionCard();
+            AudioManager.Instance.DistributionCard();
 
             deck.RemoveAt(0);
 
-            UIController.instance.UpdateEnemyDeckCard(_currentGame._enemyDeck.Count);
-            UIController.instance.UpdatePlayerDeckCard(_currentGame._playerDeck.Count);
+            UIController.instance.UpdateEnemyDeckCard(_currentGame.EnemyDeck.Count);
+            UIController.instance.UpdatePlayerDeckCard(_currentGame.PlayerDeck.Count);
         }
 
         private void CreateCardPref(Card card, Transform hand)
@@ -145,7 +152,7 @@ namespace Assets.Scripts.Managers
             {
                 foreach (var card in _playerFieldCards)
                 {
-                    card._card.CanAttack = true;
+                    card.Card.CanAttack = true;
                     card.CardInfo.HightLightCard(true);
                     card.CardAbilities.OnNewTurn();
                 }        
@@ -161,7 +168,7 @@ namespace Assets.Scripts.Managers
             {   
                 foreach (var card in _enemyFieldCards)
                 {
-                    card._card.CanAttack = true;
+                    card.Card.CanAttack = true;
                     card.CardAbilities.OnNewTurn();                                      
                 }
 
@@ -186,15 +193,15 @@ namespace Assets.Scripts.Managers
             if (IsPlayerTurn)
             {
                 GiveNewCards();
-                _currentGame._player.InCreaseManapool();
-                _currentGame._player.RestoreRoundMana();
+                _currentGame.Player.InCreaseManapool();
+                _currentGame.Player.RestoreRoundMana();
 
                 UIController.instance.UpdateHPAndMana();
             }
             else
             {
-                _currentGame._enemy.InCreaseManapool();
-                _currentGame._enemy.RestoreRoundMana();
+                _currentGame.Enemy.InCreaseManapool();
+                _currentGame.Enemy.RestoreRoundMana();
             }
 
             StartCoroutine(TurnFunc());
@@ -203,21 +210,21 @@ namespace Assets.Scripts.Managers
 
         private void GiveNewCards()
         {
-            GiveCardToHand(_currentGame._enemyDeck, _enemyHand);
-            GiveCardToHand(_currentGame._playerDeck, _playerHand);
+            GiveCardToHand(_currentGame.EnemyDeck, _enemyHand);
+            GiveCardToHand(_currentGame.PlayerDeck, _playerHand);
         }
 
         public void CardsFight(CardController attacker, CardController defender)
         {
-            var effectDamagePos = new Vector3(-6, 0, 0);
-            Instantiate(_effectDamage, effectDamagePos ,Quaternion.identity);
+            InstantiateEffectDamage();
+           // Instantiate(_effectDamage, effectDamagePos ,Quaternion.identity);
 
-            defender._card.GetDamage(attacker._card.Attack);
+            defender.Card.GetDamage(attacker.Card.Attack);
             attacker.OnDamageDeal();
-            AudioManager._instanceAudio.VoiceAttack();
+            AudioManager.Instance.VoiceAttack();
             defender.OnTakeDamage(attacker);
 
-            attacker._card.GetDamage(defender._card.Attack);
+            attacker.Card.GetDamage(defender.Card.Attack);
             attacker.OnTakeDamage();
 
             attacker.CheckForALive();
@@ -227,9 +234,9 @@ namespace Assets.Scripts.Managers
         public void ReduceMana(bool playerMana, int manaCost)
         {
             if (playerMana)
-                _currentGame._player._mana = manaCost;
+                _currentGame.Player.SetMana(manaCost);
             else
-                _currentGame._enemy._mana = manaCost;
+                _currentGame.Enemy.SetMana(manaCost);
 
             UIController.instance.UpdateHPAndMana();
         }
@@ -237,9 +244,9 @@ namespace Assets.Scripts.Managers
         public void DamageHero(CardController card, bool isEnemyAttack)
         {
             if (isEnemyAttack)
-                _currentGame._enemy.GetDamage(card._card.Attack);
+                _currentGame.Enemy.GetDamage(card.Card.Attack);
             else
-                _currentGame._player.GetDamage(card._card.Attack);
+                _currentGame.Player.GetDamage(card.Card.Attack);
 
             UIController.instance.UpdateHPAndMana();
             card.OnDamageDeal();
@@ -248,7 +255,7 @@ namespace Assets.Scripts.Managers
 
         public void CheckForResult()
         {
-            if(_currentGame._enemy._hp == 0 || _currentGame._player._hp == 0)
+            if(_currentGame.Enemy.HP == 0 || _currentGame.Player.HP == 0)
             {
                 StopAllCoroutines();
                 UIController.instance.ShowResult();
@@ -259,16 +266,16 @@ namespace Assets.Scripts.Managers
         public void CheckCardsForManaAvailability()
         {
             foreach (var card in _playerHandCards)
-                card.CardInfo.HightLightManaAvaliability(_currentGame._player._mana);
+                card.CardInfo.HightLightManaAvaliability(_currentGame.Player.Mana);
         }
 
         public void HightLightTargets(CardController attacker,bool hightLight)
         {
             List<CardController> targets = new List<CardController>();
 
-            if(attacker._card.isSpell)
+            if(attacker.Card.IsSpell)
             {
-                var spellCard = (SpellCard)attacker._card;
+                var spellCard = (SpellCard)attacker.Card;
 
                 if (spellCard.SpellTarget == TargetType.NO_TARGET)
                     targets = new List<CardController>();
@@ -279,23 +286,35 @@ namespace Assets.Scripts.Managers
             }
             else
             {
-                if (_enemyFieldCards.Exists(x => x._card.IsProvocation))
-                    targets = _enemyFieldCards.FindAll(x => x._card.IsProvocation);
+                if (_enemyFieldCards.Exists(x => x.Card.IsProvocation))
+                    targets = _enemyFieldCards.FindAll(x => x.Card.IsProvocation);
                 else
                 {
                     targets = _enemyFieldCards;
-
-                    //if(!attacker._card.IsSpell)
-                    //_enemyHero.HightLightTarget(hightLight);
                 }
             }              
             foreach (var card in targets)
             {
-                if (attacker._card.isSpell)
+                if (attacker.Card.IsSpell)
                     card.CardInfo.HightLightAsSpellTarget(hightLight);
                 else
                     card.CardInfo.HightLightTarget(hightLight);
             }    
+        }
+
+        public void InstantiateEffectHeal()
+        {
+            Instantiate(instance.EffectHeal, effectPos, Quaternion.identity);
+        }
+
+        public void InstantiateEffectDeath()
+        {
+            Instantiate(instance.EffectDeath, effectPos, Quaternion.identity);
+        }
+
+        public void InstantiateEffectDamage()
+        {
+            Instantiate(instance._effectDamage, effectPos, Quaternion.identity);
         }
     }
 }

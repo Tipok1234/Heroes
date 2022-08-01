@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Assets.Scripts.SO;
+using Assets.Scripts.Models;
 
 namespace Assets.Scripts.Managers
 {

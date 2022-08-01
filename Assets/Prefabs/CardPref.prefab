@@ -429,6 +429,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 86bb8e4dbbfad4d448ba50fa519c6a0b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  attackCard: {fileID: 1172636253621598574}
   _cardInfo: {fileID: 5756849735606203049}
   _cardMovement: {fileID: 2443604951445646131}
   _cardAbilities: {fileID: 2868683963060437633}

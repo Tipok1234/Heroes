@@ -15,7 +15,5 @@ namespace Assets.Scripts.SO
         [SerializeField] private int _defencePoints;
         [SerializeField] private AbilityType _cardAbility;
 
-
-
     }
 }

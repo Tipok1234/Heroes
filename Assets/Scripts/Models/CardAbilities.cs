@@ -12,12 +12,12 @@ namespace Assets.Scripts.Models
 
         public void OnCast()
         {
-            foreach (var ability in _cardController._card._abilities)
+            foreach (var ability in _cardController.Card.Abilities)
             {
                 switch (ability)
                 {
                     case AbilityType.INSTANT_ACTIVE:
-                        _cardController._card.CanAttack = true;
+                        _cardController.Card.CanAttack = true;
 
                         if (_cardController.IsPlayerCard)
                             _cardController.CardInfo.HightLightCard(true);
@@ -36,17 +36,15 @@ namespace Assets.Scripts.Models
 
         public void OnDamageDeal()
         {
-            foreach (var ability in _cardController._card._abilities)
+            foreach (var ability in _cardController.Card.Abilities)
             {
                 switch (ability)
                 {
                     case AbilityType.DOUBLE_ATTACK:
 
-                        Debug.LogError("DA :   "  +  _cardController._card.timeDealDamage);
-
-                        if (_cardController._card.timeDealDamage == 1)
+                        if (_cardController.Card.timeDealDamage == 1)
                         {
-                            _cardController._card.CanAttack = true;
+                            _cardController.Card.CanAttack = true;
                             if (_cardController.IsPlayerCard)
                                 _cardController.CardInfo.HightLightCard(true);
                         }
@@ -60,7 +58,7 @@ namespace Assets.Scripts.Models
         {
             _shield.SetActive(false);
 
-            foreach (var ability in _cardController._card._abilities)
+            foreach (var ability in _cardController.Card.Abilities)
             {
                 switch (ability)
                 {
@@ -70,23 +68,22 @@ namespace Assets.Scripts.Models
 
                     case AbilityType.COUNTER_ATTACK:
                         if (attacker != null)
-                            attacker._card.GetDamage(_cardController._card.Attack);
+                            attacker.Card.GetDamage(_cardController.Card.Attack);
                         break;
-
                 }
             }
         }
 
         public void OnNewTurn()
         {
-            _cardController._card.timeDealDamage = 0;
+            _cardController.Card.timeDealDamage = 0;
 
-            foreach (var ability in _cardController._card._abilities)
+            foreach (var ability in _cardController.Card.Abilities)
             {
                 switch (ability)
                 {
                     case AbilityType.REGENIRATION_EACH_TURN:
-                        _cardController._card.Defence += 2;
+                        _cardController.Card.Defence += 2;
                         _cardController.CardInfo.RefreshData();
                         break;
 
