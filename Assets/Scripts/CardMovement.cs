@@ -9,15 +9,16 @@ using Assets.Scripts.Controllers;
 
 public class CardMovement : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
-    public CardController _cardController;
-    private Camera _mainCamera;
-    private Vector3 _offset;
+    [SerializeField] private CardController _cardController;
+
     public Transform _defaultParent;
     public Transform _defaultTempCardParant;
+
     private GameObject _tempCardGo;
+    private Camera _mainCamera;
+    private Vector3 _offset;
 
-    public bool isDraggble;
-
+    private bool _isDraggble;
     private int _startID;
 
     private void Awake()
@@ -30,14 +31,14 @@ public class CardMovement : MonoBehaviour, IBeginDragHandler, IDragHandler, IEnd
         _offset = transform.position - _mainCamera.ScreenToWorldPoint(eventData.position);
         _defaultParent = _defaultTempCardParant = transform.parent;
 
-        isDraggble = GameManager.instance.IsPlayerTurn &&
-            ((_defaultParent.GetComponent<DropPlaceScript>().type == FieldType.SELF_HAND &&
+        _isDraggble = GameManager.instance.IsPlayerTurn &&
+            ((_defaultParent.GetComponent<DropPlaceScript>().Type == FieldType.SELF_HAND &&
             GameManager.instance._currentGame._player._mana >= _cardController._card.Manacost) ||
-            (_defaultParent.GetComponent<DropPlaceScript>().type == FieldType.SELF_FIELD &&
+            (_defaultParent.GetComponent<DropPlaceScript>().Type == FieldType.SELF_FIELD &&
             _cardController._card.CanAttack)
             );
             
-        if (!isDraggble)
+        if (!_isDraggble)
             return;
 
         _startID = transform.GetSiblingIndex();
@@ -54,7 +55,7 @@ public class CardMovement : MonoBehaviour, IBeginDragHandler, IDragHandler, IEnd
 
     public void OnDrag(PointerEventData eventData)
     {
-        if (!isDraggble)
+        if (!_isDraggble)
             return;
 
         Vector3 newPos = _mainCamera.ScreenToWorldPoint(eventData.position);
@@ -65,14 +66,14 @@ public class CardMovement : MonoBehaviour, IBeginDragHandler, IDragHandler, IEnd
             if (_tempCardGo.transform.parent != _defaultTempCardParant)
                 _tempCardGo.transform.SetParent(_defaultTempCardParant);
 
-            if (_defaultParent.GetComponent<DropPlaceScript>().type != FieldType.SELF_FIELD)
+            if (_defaultParent.GetComponent<DropPlaceScript>().Type != FieldType.SELF_FIELD)
                 CheckPosition();
         }
     }
 
     public void OnEndDrag(PointerEventData eventData)
     {
-        if (!isDraggble)
+        if (!_isDraggble)
             return;
 
         GameManager.instance.HightLightTargets(_cardController,false); 

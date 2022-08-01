@@ -7,39 +7,39 @@ namespace Assets.Scripts.Models
 {
     public class CardInfo : MonoBehaviour
     {
-       // public GameObject ManaObj => _manaObj;
-        
-        public CardController _cardController;
-        public Image _cardImage;
-        public Image logo;
-        public TMP_Text name;
-        public TMP_Text attack;
-        public TMP_Text defence;
-        public TMP_Text manaCost;
-        public GameObject _hideObj;
-        public GameObject _hightlightedObj;
-        public GameObject _manaObj;
-        public Color _normalColor;
-        public Color _targetColor;
-        public Color _spellTargetColor;
+        // public GameObject ManaObj => _manaObj;
+
+        [SerializeField] private CardController _cardController;
+        [SerializeField] private Image _cardImage;
+        [SerializeField] private Image _logo;
+        [SerializeField] private TMP_Text _name;
+        [SerializeField] private TMP_Text _attack;
+        [SerializeField] private TMP_Text _defence;
+        [SerializeField] private TMP_Text _manaCost;
+        [SerializeField] private GameObject _hideObj;
+        [SerializeField] private GameObject _hightlightedObj;
+        [SerializeField] private GameObject _manaObj;
+        [SerializeField] private Color _normalColor;
+        [SerializeField] private Color _targetColor;
+        [SerializeField] private Color _spellTargetColor;
 
         public void HideCardInfo()
         {
             _hideObj.SetActive(true);
-            manaCost.text = "";
+            _manaCost.text = "";
         }
         public void ShowCardInfo()
         {
             _hideObj.SetActive(false);
 
-            logo.sprite = _cardController._card.Logo;
-            logo.preserveAspect = true;
-            name.text = _cardController._card.Name;
+            _logo.sprite = _cardController._card.Logo;
+            _logo.preserveAspect = true;
+            _name.text = _cardController._card.Name;
 
             if(_cardController._card.isSpell)
             {
-                attack.gameObject.SetActive(false);
-                defence.gameObject.SetActive(false);
+                _attack.gameObject.SetActive(false);
+                _defence.gameObject.SetActive(false);
             }
 
             RefreshData();
@@ -52,9 +52,9 @@ namespace Assets.Scripts.Models
 
         public void RefreshData()
         {
-            attack.text = "<color=#C10000>" + _cardController._card.Attack.ToString();
-            defence.text = "<color=#00FF00>" + _cardController._card.Defence.ToString();
-            manaCost.text = "<color=#FFFFFF>" + _cardController._card.Manacost.ToString();
+            _attack.text = "<color=#C10000>" + _cardController._card.Attack.ToString();
+            _defence.text = "<color=#00FF00>" + _cardController._card.Defence.ToString();
+            _manaCost.text = "<color=#FFFFFF>" + _cardController._card.Manacost.ToString();
         }
 
         public void HightLightCard(bool hightlight)

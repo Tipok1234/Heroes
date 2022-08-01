@@ -63,7 +63,7 @@ public class AI : MonoBehaviour
                 else
                     enemy = GameManager.instance._playerFieldCards[Random.Range(0, GameManager.instance._playerFieldCards.Count)];
 
-                activeCard._cardMovement.MoveToTarget(enemy.transform);
+                activeCard.CardMovement.MoveToTarget(enemy.transform);
                 yield return new WaitForSeconds(0.75f);
 
                 GameManager.instance.CardsFight(activeCard, enemy);
@@ -84,11 +84,11 @@ public class AI : MonoBehaviour
 
     private void CastSpell(CardController card)
     {
-        switch (((SpellCard)card._card)._spellTarget)
+        switch (((SpellCard)card._card).SpellTarget)
         {
             case TargetType.NO_TARGET:
 
-                switch (((SpellCard)card._card)._spell)
+                switch (((SpellCard)card._card).Spell)
                 {
                     case SpellType.HEAL_ALLY_FIELD_CARDS:
 
@@ -134,7 +134,7 @@ public class AI : MonoBehaviour
 
     private IEnumerator CastCard(CardController spell, CardController target = null)
     {
-        if(((SpellCard)spell._card)._spellTarget == TargetType.NO_TARGET)
+        if(((SpellCard)spell._card).SpellTarget == TargetType.NO_TARGET)
         {
             spell.GetComponent<CardMovement>().MoveToField(GameManager.instance._enemyField);
             yield return new WaitForSeconds(0.51f);
@@ -143,7 +143,7 @@ public class AI : MonoBehaviour
         }
         else
         {
-            spell._cardInfo.ShowCardInfo();
+            spell.CardInfo.ShowCardInfo();
             spell.GetComponent<CardMovement>().MoveToTarget(target.transform);
             yield return new WaitForSeconds(0.51f);
 
@@ -152,6 +152,7 @@ public class AI : MonoBehaviour
             GameManager.instance.ReduceMana(false, spell._card.Manacost);
 
             spell._card.IsPlaced = true;
+
 
             spell.UseSpell(target);
         }

@@ -8,12 +8,17 @@ namespace Assets.Scripts.Controllers
 {
     public class CardController : MonoBehaviour
     {
-        public Card _card;
-        public bool _isPlayerCard;
+        public CardInfo CardInfo => _cardInfo;
+        public CardMovement CardMovement => _cardMovement;
+        public CardAbilities CardAbilities => _cardAbilities;
+        public bool IsPlayerCard => _isPlayerCard;
 
-        public CardInfo _cardInfo;
-        public CardMovement _cardMovement;
-        public CardAbilities _cardAbilities;
+        public Card _card;
+        private bool _isPlayerCard;
+
+        [SerializeField] private CardInfo _cardInfo;
+        [SerializeField] private CardMovement _cardMovement;
+        [SerializeField] private CardAbilities _cardAbilities;
        // [SerializeField] private GameObject _effectHeal;
 
         private GameManager _gameManager;
@@ -38,7 +43,7 @@ namespace Assets.Scripts.Controllers
         public void OnCast()
         {
             
-            if (_card.isSpell && ((SpellCard)_card)._spellTarget != TargetType.NO_TARGET)
+            if (_card.isSpell && ((SpellCard)_card).SpellTarget != TargetType.NO_TARGET)
                 return;
 
             if(_isPlayerCard)
@@ -88,7 +93,7 @@ namespace Assets.Scripts.Controllers
             var spellCard = (SpellCard)_card;
             var effectHealPos = new Vector3(-6, 0, 0);
 
-            switch (spellCard._spell)
+            switch (spellCard.Spell)
             {
                 case SpellType.HEAL_ALLY_FIELD_CARDS:
 
@@ -99,7 +104,7 @@ namespace Assets.Scripts.Controllers
                     foreach (var card in allyCards)
                     {
                         AudioManager._instanceAudio.HealAudio();
-                        card._card.Defence += spellCard._spellValue;
+                        card._card.Defence += spellCard.SpellValue;
                         card._cardInfo.RefreshData();
                     }
 
@@ -116,7 +121,7 @@ namespace Assets.Scripts.Controllers
                     foreach (var card in enemyCard)
                     {
                         AudioManager._instanceAudio.VoiceAttack();
-                        GiveDamageTo(card, spellCard._spellValue);
+                        GiveDamageTo(card, spellCard.SpellValue);
                     }
 
                     break;
@@ -125,11 +130,11 @@ namespace Assets.Scripts.Controllers
 
                     if (_isPlayerCard)
                     {
-                        _gameManager._currentGame._player._hp += spellCard._spellValue;
+                        _gameManager._currentGame._player._hp += spellCard.SpellValue;
                     }  
                     else
                     {
-                        _gameManager._currentGame._enemy._hp += spellCard._spellValue;
+                        _gameManager._currentGame._enemy._hp += spellCard.SpellValue;
                     }
 
                     AudioManager._instanceAudio.HealAudio();
@@ -142,11 +147,11 @@ namespace Assets.Scripts.Controllers
 
                     if (_isPlayerCard)
                     {
-                        _gameManager._currentGame._enemy._hp -= spellCard._spellValue;
+                        _gameManager._currentGame._enemy._hp -= spellCard.SpellValue;
                     }                      
                     else
                     {
-                        _gameManager._currentGame._player._hp -= spellCard._spellValue;
+                        _gameManager._currentGame._player._hp -= spellCard.SpellValue;
                     }
 
                     AudioManager._instanceAudio.VoiceAttack();
@@ -159,7 +164,7 @@ namespace Assets.Scripts.Controllers
 
                     {
                         AudioManager._instanceAudio.HealAudio();
-                        target._card.Defence += spellCard._spellValue;
+                        target._card.Defence += spellCard.SpellValue;
                         Instantiate(_gameManager._effectHeal, effectHealPos, Quaternion.identity);
                     }
 
@@ -170,7 +175,7 @@ namespace Assets.Scripts.Controllers
 
                     {
                         AudioManager._instanceAudio.VoiceAttack();
-                        GiveDamageTo(target, spellCard._spellValue);
+                        GiveDamageTo(target, spellCard.SpellValue);
                     }
 
                     break;
@@ -199,7 +204,7 @@ namespace Assets.Scripts.Controllers
 
                     {
                         AudioManager._instanceAudio.BuffAudio();
-                        target._card.Attack += spellCard._spellValue;
+                        target._card.Attack += spellCard.SpellValue;
                     }
                     
                     break;
@@ -208,7 +213,7 @@ namespace Assets.Scripts.Controllers
 
                     {
                         AudioManager._instanceAudio.BuffAudio();
-                        target._card.Attack = Mathf.Clamp(target._card.Attack - spellCard._spellValue, 0, int.MaxValue);
+                        target._card.Attack = Mathf.Clamp(target._card.Attack - spellCard.SpellValue, 0, int.MaxValue);
                     }
                  
                     break;

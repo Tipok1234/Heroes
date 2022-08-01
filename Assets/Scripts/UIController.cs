@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
@@ -9,17 +7,17 @@ public class UIController : MonoBehaviour
 {
     public static UIController instance;
 
-    public TMP_Text _playerMana;
-    public TMP_Text _enemyMana;
-    public TMP_Text _playerHP;
-    public TMP_Text _enemyHP;
-    public TMP_Text _playerDeckCardsCount;
-    public TMP_Text _enemyDeckCardsCount;
+    [SerializeField] private TMP_Text _playerMana;
+    [SerializeField] private TMP_Text _enemyMana;
+    [SerializeField] private TMP_Text _playerHP;
+    [SerializeField] private TMP_Text _enemyHP;
+    [SerializeField] private TMP_Text _playerDeckCardsCount;
+    [SerializeField] private TMP_Text _enemyDeckCardsCount;
 
-    public GameObject _resultGO;
-    public TMP_Text _resultText;
-    public TMP_Text _turnTime;
-    public Button _endTurnButton;
+    [SerializeField] private GameObject _resultGO;
+    [SerializeField] private TMP_Text _resultText;
+    [SerializeField] private TMP_Text _turnTime;
+    [SerializeField] private Button _endTurnButton;
     //public Button _restartButton;
 
     private void Awake()

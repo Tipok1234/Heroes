@@ -1,14 +1,14 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class AudioManager : MonoBehaviour
 {
-    public AudioSource _backGroundAudioSource;
-    public AudioSource _attackAudioSource;
-    public AudioSource _distributionAudioSource;
-    public AudioSource _healAudioSource;
-    public AudioSource _buffAudioSource;
+    //public AudioManager Instance => _instanceAudio;
+
+    [SerializeField] private AudioSource _backGroundAudioSource;
+    [SerializeField] private AudioSource _attackAudioSource;
+    [SerializeField] private AudioSource _distributionAudioSource;
+    [SerializeField] private AudioSource _healAudioSource;
+    [SerializeField] private AudioSource _buffAudioSource;
 
     public static AudioManager _instanceAudio;
 

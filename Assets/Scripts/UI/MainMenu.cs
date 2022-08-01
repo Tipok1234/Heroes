@@ -12,13 +12,11 @@ namespace Assets.Scripts.UI
         [SerializeField] private Canvas _optionCanvas;
         [SerializeField] private Button _startGameButton;
         [SerializeField] private Button _optionButton;
-        [SerializeField] private Button _exitButton;
 
         private void Awake()
         {
             _startGameButton.onClick.AddListener(PlayGame);
             _optionButton.onClick.AddListener(Setting);
-            _exitButton.onClick.AddListener(ExitGame);
         }
         public void PlayGame()
         {
@@ -29,12 +27,6 @@ namespace Assets.Scripts.UI
         public void Setting()
         {
             _optionCanvas.enabled = !_optionCanvas.enabled;
-        }
-
-        public void ExitGame()
-        {
-            Application.Quit();
-            Debug.LogError("GAME OVER!");
         }
     }
 }

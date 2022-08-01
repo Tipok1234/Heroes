@@ -15,16 +15,16 @@ public class SpellTarget : MonoBehaviour, IDropHandler
         CardController spell = eventData.pointerDrag.GetComponent<CardController>(),
                        target = GetComponent<CardController>();
 
-        if (spell && spell._card.isSpell && spell._isPlayerCard &&
+        if (spell && spell._card.isSpell && spell.IsPlayerCard &&
             target._card.IsPlaced &&
             GameManager.instance._currentGame._player._mana >= spell._card.Manacost)
         {
             var spellCard = (SpellCard)spell._card;
             
-            if ((spellCard._spellTarget == TargetType.ALLY_CARD_TARGET &&
-                target._isPlayerCard) ||
-                (spellCard._spellTarget == TargetType.ENEMY_CARD_TARGET &&
-                !target._isPlayerCard))
+            if ((spellCard.SpellTarget == TargetType.ALLY_CARD_TARGET &&
+                target.IsPlayerCard) ||
+                (spellCard.SpellTarget == TargetType.ENEMY_CARD_TARGET &&
+                !target.IsPlayerCard))
             {
                 GameManager.instance.ReduceMana(true, spell._card.Manacost);
                 spell.UseSpell(target);

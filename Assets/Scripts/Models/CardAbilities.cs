@@ -6,9 +6,9 @@ namespace Assets.Scripts.Models
 {
     public class CardAbilities : MonoBehaviour
     {
-        public CardController _cardController;
-        public GameObject _shield;
-        public GameObject _provocation;
+        [SerializeField] private CardController _cardController;
+        [SerializeField] private  GameObject _shield;
+        [SerializeField] private GameObject _provocation;
 
         public void OnCast()
         {
@@ -19,8 +19,8 @@ namespace Assets.Scripts.Models
                     case AbilityType.INSTANT_ACTIVE:
                         _cardController._card.CanAttack = true;
 
-                        if (_cardController._isPlayerCard)
-                            _cardController._cardInfo.HightLightCard(true);
+                        if (_cardController.IsPlayerCard)
+                            _cardController.CardInfo.HightLightCard(true);
                         break;
 
                     case AbilityType.SHIELD:
@@ -47,8 +47,8 @@ namespace Assets.Scripts.Models
                         if (_cardController._card.timeDealDamage == 1)
                         {
                             _cardController._card.CanAttack = true;
-                            if (_cardController._isPlayerCard)
-                                _cardController._cardInfo.HightLightCard(true);
+                            if (_cardController.IsPlayerCard)
+                                _cardController.CardInfo.HightLightCard(true);
                         }
 
                         break;
@@ -87,7 +87,7 @@ namespace Assets.Scripts.Models
                 {
                     case AbilityType.REGENIRATION_EACH_TURN:
                         _cardController._card.Defence += 2;
-                        _cardController._cardInfo.RefreshData();
+                        _cardController.CardInfo.RefreshData();
                         break;
 
                 }

@@ -114,15 +114,15 @@ namespace Assets.Scripts.Managers
             cardC.Init(card, hand == _playerHand);
             
 
-            if (cardC._isPlayerCard)
+            if (cardC.IsPlayerCard)
             {
                 _playerHandCards.Add(cardC);
-                 cardC._cardMovement.MoveToHand(_playerHand);
+                 cardC.CardMovement.MoveToHand(_playerHand);
             }
             else
             {
                 _enemyHandCards.Add(cardC);
-                cardC._cardMovement.MoveToHand(_enemyHand);
+                cardC.CardMovement.MoveToHand(_enemyHand);
             }              
         }
 
@@ -133,7 +133,7 @@ namespace Assets.Scripts.Managers
 
             foreach (var card in _playerFieldCards)
             {
-                card._cardInfo.HightLightCard(false);
+                card.CardInfo.HightLightCard(false);
             }          
                 
             CheckCardsForManaAvailability();
@@ -143,8 +143,8 @@ namespace Assets.Scripts.Managers
                 foreach (var card in _playerFieldCards)
                 {
                     card._card.CanAttack = true;
-                    card._cardInfo.HightLightCard(true);
-                    card._cardAbilities.OnNewTurn();
+                    card.CardInfo.HightLightCard(true);
+                    card.CardAbilities.OnNewTurn();
                 }        
 
                 while(_turnTime-- > 0)
@@ -159,7 +159,7 @@ namespace Assets.Scripts.Managers
                 foreach (var card in _enemyFieldCards)
                 {
                     card._card.CanAttack = true;
-                    card._cardAbilities.OnNewTurn();                                      
+                    card.CardAbilities.OnNewTurn();                                      
                 }
 
                 _enemyAI.MakeTurn();               
@@ -256,7 +256,7 @@ namespace Assets.Scripts.Managers
         public void CheckCardsForManaAvailability()
         {
             foreach (var card in _playerHandCards)
-                card._cardInfo.HightLightManaAvaliability(_currentGame._player._mana);
+                card.CardInfo.HightLightManaAvaliability(_currentGame._player._mana);
         }
 
         public void HightLightTargets(CardController attacker,bool hightLight)
@@ -267,9 +267,9 @@ namespace Assets.Scripts.Managers
             {
                 var spellCard = (SpellCard)attacker._card;
 
-                if (spellCard._spellTarget == TargetType.NO_TARGET)
+                if (spellCard.SpellTarget == TargetType.NO_TARGET)
                     targets = new List<CardController>();
-                else if (spellCard._spellTarget == TargetType.ALLY_CARD_TARGET)
+                else if (spellCard.SpellTarget == TargetType.ALLY_CARD_TARGET)
                     targets = _playerFieldCards;
                 else
                     targets = _enemyFieldCards;
@@ -289,9 +289,9 @@ namespace Assets.Scripts.Managers
             foreach (var card in targets)
             {
                 if (attacker._card.isSpell)
-                    card._cardInfo.HightLightAsSpellTarget(hightLight);
+                    card.CardInfo.HightLightAsSpellTarget(hightLight);
                 else
-                    card._cardInfo.HightLightTarget(hightLight);
+                    card.CardInfo.HightLightTarget(hightLight);
             }    
         }
     }

@@ -6,9 +6,13 @@ namespace Assets.Scripts.Managers
 { 
     public class SpellCard : Card
     {
-        public SpellType _spell;
-        public TargetType _spellTarget;
-        public int _spellValue;
+        public int SpellValue => _spellValue;
+        public SpellType Spell => _spell;
+        public TargetType SpellTarget => _spellTarget;
+
+        private SpellType _spell;
+        private TargetType _spellTarget;
+        private int _spellValue;
         private SpellCardDataSO _spellCardDataSO;
 
 

@@ -6,9 +6,9 @@ using UnityEngine.UI;
 using Assets.Scripts.Enums;
 public class AttackHero : MonoBehaviour, IDropHandler
 {
-    public HeroType _type;
-    public Color _normalHeroColor;
-    public Color _targetHeroColor;
+    private HeroType _type;
+    [SerializeField] private Color _normalHeroColor;
+    [SerializeField] private Color _targetHeroColor;
 
     public void OnDrop(PointerEventData eventData)
     {
@@ -21,7 +21,7 @@ public class AttackHero : MonoBehaviour, IDropHandler
             !GameManager.instance._enemyFieldCards.Exists(x => x._card.IsProvocation))
         {
             GameManager.instance.DamageHero(card, true);
-            AudioManager._instanceAudio.VoiceAttack();
+            AudioManager._instanceAudio.VoiceAttack();         
         }
     }
 

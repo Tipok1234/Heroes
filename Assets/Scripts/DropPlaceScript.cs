@@ -7,7 +7,9 @@ using Assets.Scripts.Enums;
 
 public class DropPlaceScript : MonoBehaviour, IDropHandler, IPointerEnterHandler, IPointerExitHandler
 {
-    public FieldType type;
+    public FieldType Type => type;
+
+    [SerializeField] private FieldType type;
     public void OnDrop(PointerEventData eventData)
     {
         if (type != FieldType.SELF_FIELD)
@@ -20,10 +22,10 @@ public class DropPlaceScript : MonoBehaviour, IDropHandler, IPointerEnterHandler
             !card._card.IsPlaced)
         {
             if(!card._card.isSpell)
-            card._cardMovement._defaultParent = transform;
+            card.CardMovement._defaultParent = transform;
 
 
-            card._cardInfo.HideMana(false);
+            card.CardInfo.HideMana(false);
             card.OnCast();
         }       
     }
