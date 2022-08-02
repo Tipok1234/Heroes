@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _manaCostPoints: 2
   _cardName: Damage Hero
-  _cardMainSprite: {fileID: 21300000, guid: 90674a676275dab4292d42bb3aca62a0, type: 3}
+  _cardMainSprite: {fileID: 21300000, guid: 719c2201c2f5f6c4aafffaeb5abdf5f9, type: 3}
   _spell: 4
   _spellTarget: 0
   _spellValue: 2

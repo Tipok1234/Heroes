@@ -48,7 +48,6 @@ namespace Assets.Scripts.Models
                             if (_cardController.IsPlayerCard)
                                 _cardController.CardInfo.HightLightCard(true);
                         }
-
                         break;
                 }
             }

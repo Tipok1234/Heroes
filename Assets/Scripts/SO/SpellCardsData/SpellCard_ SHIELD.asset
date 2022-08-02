@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _manaCostPoints: 2
   _cardName: SHIELD
-  _cardMainSprite: {fileID: 21300000, guid: bbcb5dd3b29d24343afb35ef2956c16b, type: 3}
+  _cardMainSprite: {fileID: 21300000, guid: d659f7396cd57754eba78763cf986c51, type: 3}
   _spell: 7
   _spellTarget: 1
   _spellValue: 2

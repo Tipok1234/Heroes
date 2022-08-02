@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _manaCostPoints: 2
   _cardName: Ally Heal
-  _cardMainSprite: {fileID: 21300000, guid: 51398de16ae523d40b42645783b01eb0, type: 3}
+  _cardMainSprite: {fileID: 21300000, guid: 7092324b93851a14c858530cca4a6b26, type: 3}
   _spell: 1
   _spellTarget: 0
   _spellValue: 2

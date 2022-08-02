@@ -1,15 +1,20 @@
+using Assets.Scripts.Managers;
 using UnityEngine;
 using UnityEngine.Audio;
 using UnityEngine.UI;
 
+
 namespace Assets.Scripts.UI
 {
     public class OptionMenu : MonoBehaviour
-    {       
+    {
+        public static OptionMenu _optionMenu;
+
         [SerializeField] private AudioMixer audioMixer;
         [SerializeField] private Canvas _canvasOptionMenu;
         [SerializeField] private Button _openOptionButton;
         [SerializeField] private Button _backOptionButton;
+
 
         private void Awake()
         {
@@ -25,9 +30,10 @@ namespace Assets.Scripts.UI
         {
             AudioListener.pause = !AudioListener.pause;
         }
+
         private void OpenOptionMenu()
         {
-            _canvasOptionMenu.enabled = !_canvasOptionMenu.enabled;  
+            _canvasOptionMenu.enabled = !_canvasOptionMenu.enabled;
         }
     }
 }

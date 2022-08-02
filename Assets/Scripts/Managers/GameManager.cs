@@ -35,15 +35,14 @@ namespace Assets.Scripts.Managers
         [SerializeField] private GameObject _effectHeal;
         [SerializeField] private GameObject _effectDeath;
 
-        private int _turn;
-        private int _turnTime = 30;
-        private int _countCard = 4;
-        private Vector3 effectPos = new Vector3(-6, 0, 0);
-        
-
         [SerializeField] private AttackHero _enemyHero;
         [SerializeField] private AttackHero _playerHero;
         [SerializeField] private AIManager _enemyAI;
+
+        private int _turn;
+        private int _turnTime = 30;
+        private int _countCard = 4;
+        private Vector3 effectPos = new Vector3(-6, 0, 0);        
 
         private List<CardController> _playerHandCards = new List<CardController>(),
                                     _playerFieldCards = new List<CardController>(),
@@ -58,7 +57,7 @@ namespace Assets.Scripts.Managers
 
         public void RestartGame()
         {
-            StopAllCoroutines();        
+            StopAllCoroutines();
 
             foreach (var card in _playerHandCards)
                 Destroy(card.gameObject);
@@ -86,7 +85,7 @@ namespace Assets.Scripts.Managers
             StartCoroutine(GiveHandCards(_currentGame.PlayerDeck, _playerHand));           
 
             UIController.instance.StartGame();
-    
+
             StartCoroutine(TurnFunc());
         }
 
@@ -121,8 +120,7 @@ namespace Assets.Scripts.Managers
             GameObject cardGO = Instantiate(_cardPref,posDragCard,Quaternion.identity, hand);
             CardController cardC = cardGO.GetComponent<CardController>();
 
-            cardC.Init(card, hand == _playerHand);
-            
+            cardC.Init(card, hand == _playerHand);           
 
             if (cardC.IsPlayerCard)
             {
@@ -203,9 +201,7 @@ namespace Assets.Scripts.Managers
                 _currentGame.Enemy.InCreaseManapool();
                 _currentGame.Enemy.RestoreRoundMana();
             }
-
-            StartCoroutine(TurnFunc());
-            
+            StartCoroutine(TurnFunc());            
         }
 
         private void GiveNewCards()
@@ -216,8 +212,7 @@ namespace Assets.Scripts.Managers
 
         public void CardsFight(CardController attacker, CardController defender)
         {
-            InstantiateEffectDamage();
-           // Instantiate(_effectDamage, effectDamagePos ,Quaternion.identity);
+            InstantiateEffectDamage();         
 
             defender.Card.GetDamage(attacker.Card.Attack);
             attacker.OnDamageDeal();
@@ -259,7 +254,6 @@ namespace Assets.Scripts.Managers
             {
                 StopAllCoroutines();
                 UIController.instance.ShowResult();
-                
             }
         }
 

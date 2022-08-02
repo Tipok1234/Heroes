@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _manaCostPoints: 2
   _cardName: Heal Card
-  _cardMainSprite: {fileID: 21300000, guid: fab5974a32bf4bc4f8bfdb04b898fb46, type: 3}
+  _cardMainSprite: {fileID: 21300000, guid: 9895f5f95566ceb47bb239149d90cb44, type: 3}
   _spell: 5
   _spellTarget: 1
   _spellValue: 2

@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _manaCostPoints: 2
   _cardName: DEBUFF Damage
-  _cardMainSprite: {fileID: 21300000, guid: 3e3390b07ce485e40ba94247dbef6e23, type: 3}
+  _cardMainSprite: {fileID: 21300000, guid: 8a5f9829a049c704fa992203bfc451f2, type: 3}
   _spell: 10
   _spellTarget: 2
   _spellValue: 2

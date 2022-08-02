@@ -43,8 +43,7 @@ namespace Assets.Scripts.Controllers
         }
 
         public void OnCast()
-        {
-            
+        {           
             if (_card.IsSpell && ((SpellCard)_card).SpellTarget != TargetType.NO_TARGET)
                 return;
 
@@ -122,6 +121,7 @@ namespace Assets.Scripts.Controllers
                     foreach (var card in enemyCard)
                     {
                         AudioManager.Instance.VoiceAttack();
+                        _gameManager.InstantiateEffectDamage();
                         GiveDamageTo(card, spellCard.SpellValue);
                     }
 
@@ -157,6 +157,7 @@ namespace Assets.Scripts.Controllers
 
                     AudioManager.Instance.VoiceAttack();
                     UIController.instance.UpdateHPAndMana();
+                    _gameManager.InstantiateEffectDamage();
                     _gameManager.CheckForResult();
 
                     break;
@@ -169,7 +170,6 @@ namespace Assets.Scripts.Controllers
                         _gameManager.InstantiateEffectHeal();
                     }
 
-
                     break;
 
                 case SpellType.DAMAGE_ENEMY_CARD:
@@ -177,6 +177,7 @@ namespace Assets.Scripts.Controllers
                     {
                         AudioManager.Instance.VoiceAttack();
                         GiveDamageTo(target, spellCard.SpellValue);
+                        _gameManager.InstantiateEffectDamage();
                     }
 
                     break;
@@ -248,8 +249,7 @@ namespace Assets.Scripts.Controllers
         }
 
         public void DestroyCard()
-        {
-            
+        {           
             _cardMovement.OnEndDrag(null);
 
             RemoveCardFromList(_gameManager.EnemyFieldCards);

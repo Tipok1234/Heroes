@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _manaCostPoints: 2
   _cardName: PROVOCATION
-  _cardMainSprite: {fileID: 21300000, guid: fc3b0a4f22dd5104da9046da80a55019, type: 3}
+  _cardMainSprite: {fileID: 21300000, guid: 4dc051a0301cecb4aa1a85036ace2a58, type: 3}
   _spell: 8
   _spellTarget: 1
   _spellValue: 2

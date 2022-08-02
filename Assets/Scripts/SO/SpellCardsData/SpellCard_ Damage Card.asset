@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _manaCostPoints: 2
   _cardName: Damage Card
-  _cardMainSprite: {fileID: 21300000, guid: 98170495bfaaf804486627191f0539af, type: 3}
+  _cardMainSprite: {fileID: 21300000, guid: 2c04f4986ebc72e48a8b0c3eb2e42db2, type: 3}
   _spell: 6
   _spellTarget: 2
   _spellValue: 2

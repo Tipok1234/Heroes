@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _manaCostPoints: 2
   _cardName: BUFF Damage
-  _cardMainSprite: {fileID: 21300000, guid: f30ce40f1b3c7084987e7dd7a5695fb4, type: 3}
+  _cardMainSprite: {fileID: 21300000, guid: cf6478ef684ce7f4c830edba147c7607, type: 3}
   _spell: 9
   _spellTarget: 1
   _spellValue: 2
