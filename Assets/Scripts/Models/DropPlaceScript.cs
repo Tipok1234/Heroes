@@ -21,7 +21,7 @@ namespace Assets.Scripts.Models
 
             if (card && GameManager.instance.IsPlayerTurn  &&
                 GameManager.instance.CurrentGame.Player.Mana >= card.Card.Manacost 
-               && GameManager.instance.PlayerFieldCards.Count <= 4 && !card.Card.IsPlaced)
+               && GameManager.instance.PlayerFieldCards.Count < 4 && !card.Card.IsPlaced)
             {
                 if (!card.Card.IsSpell)
                     card.CardMovement._defaultParent = transform;

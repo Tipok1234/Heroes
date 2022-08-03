@@ -280,19 +280,31 @@ namespace Assets.Scripts.Managers
             }
             else
             {
-                if (_enemyFieldCards.Exists(x => x.Card.IsProvocation))
-                    targets = _enemyFieldCards.FindAll(x => x.Card.IsProvocation);
-                else
-                {
                     targets = _enemyFieldCards;
-                }
-            }              
+            }   
+            
             foreach (var card in targets)
             {
                 if (attacker.Card.IsSpell)
+                {
                     card.CardInfo.HightLightAsSpellTarget(hightLight);
+
+                }
+                                     
                 else
+                {
                     card.CardInfo.HightLightTarget(hightLight);
+                    _enemyHero.HightLightTargetHero(hightLight);
+
+                    if (_enemyFieldCards.Exists(x => x.Card.IsProvocation))
+                    {
+                        targets = _enemyFieldCards.FindAll(x => x.Card.IsProvocation);
+                        _enemyHero.HightLightTargetHero(false);
+                        card.CardInfo.HightLightTarget(false);
+                    }
+                }
+
+
             }    
         }
 

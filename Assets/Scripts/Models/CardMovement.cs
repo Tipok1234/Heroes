@@ -49,7 +49,8 @@ namespace Assets.Scripts.Models
 
             if (_cardController.Card.IsSpell || _cardController.Card.CanAttack)
                 GameManager.instance.HightLightTargets(_cardController, true);
-
+                
+            
             _tempCardGo.transform.SetParent(_defaultParent);
             _tempCardGo.transform.SetSiblingIndex(transform.GetSiblingIndex());
 

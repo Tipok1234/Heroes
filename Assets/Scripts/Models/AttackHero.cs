@@ -10,7 +10,9 @@ namespace Assets.Scripts.Models
 {
     public class AttackHero : MonoBehaviour, IDropHandler
     {
-        private HeroType _type;
+        public static AttackHero instanceHero;
+
+        [SerializeField] private HeroType _type;
         [SerializeField] private Color _normalHeroColor;
         [SerializeField] private Color _targetHeroColor;
         [SerializeField] private Image _imageTarget;
@@ -31,7 +33,7 @@ namespace Assets.Scripts.Models
             }
         }
 
-        public void HightLightTarget(bool hightLight)
+        public void HightLightTargetHero(bool hightLight)
         {
             _imageTarget.color = hightLight ? _targetHeroColor : _normalHeroColor;
         }

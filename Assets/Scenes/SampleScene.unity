@@ -2592,6 +2592,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3878f7f6121f396438bf52ccbc58732a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _type: 0
   _normalHeroColor: {r: 0, g: 0, b: 0, a: 0}
   _targetHeroColor: {r: 0.8396226, g: 0, b: 0, a: 1}
   _imageTarget: {fileID: 652528633}
@@ -4185,8 +4186,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3878f7f6121f396438bf52ccbc58732a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _type: 1
   _normalHeroColor: {r: 0, g: 0, b: 0, a: 0}
-  _targetHeroColor: {r: 0.8392157, g: 0, b: 0, a: 0}
+  _targetHeroColor: {r: 0.8392157, g: 0, b: 0, a: 1}
   _imageTarget: {fileID: 1183479511}
 --- !u!1 &1192637171
 GameObject:

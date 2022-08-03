@@ -2,6 +2,7 @@ using UnityEngine.UI;
 using TMPro;
 using UnityEngine;
 using Assets.Scripts.Controllers;
+using Assets.Scripts.Models;
 
 namespace Assets.Scripts.UI
 {
